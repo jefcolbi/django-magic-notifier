@@ -1,0 +1,1 @@
+Django Magic Notifier

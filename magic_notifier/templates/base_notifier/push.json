@@ -1,0 +1,21 @@
+{
+    "text": "{{ text }}",
+    "type": "{{ type|default:'default' }}",
+    "sub_type": "{{ sub_type }}",
+    "link": "{{ link|default:'http://blank' }}",
+    "image": "{{ image }}",
+    "actions": [
+        {% for action in actions %}
+        """
+        {"text": "{{ action.text}}",
+        "method": "{{ action.method }}",
+        "url": "{{ action.url }}"}
+        """
+        {% endfor %}
+    ],
+    "data": {
+        {% for key, value in data.items %}
+        "{{ key }}": "{{ value }}"{% if not forlopp.last %},{% endif %}
+        {% endfor %}
+    }
+}

@@ -1,0 +1,5 @@
+{% load i18n %}
+{% block content %}
+{% endblock %}
+
+{% trans "If you do not wish to receive any further emails from us, please" %} <a href="https://getyourjob.yaknema.com/unsuscribe/?email={{ user.email }}" target="_blank">{% trans "unsubscribe" %}</a>

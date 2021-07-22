@@ -1,0 +1,6 @@
+*.pyc
+*.wpr
+*.wpu
+.idea/
+.env/
+django_magic_notifier.egg-info/
