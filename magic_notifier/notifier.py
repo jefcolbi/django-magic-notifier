@@ -4,6 +4,10 @@ from magic_notifier.pusher import Pusher
 import logging
 import traceback
 from magic_notifier.settings import NOTIFIER_THREADED
+from django.contrib.auth import get_user_model
+from typing import  Union
+
+User = get_user_model()
 
 logger = logging.getLogger("notifier")
 
@@ -11,7 +15,7 @@ logger = logging.getLogger("notifier")
 def notify(
     vias: list,
     subject: str = None,
-    receivers: list = None,
+    receivers: Union[str, list] = None,
     template: str = None,
     context: dict = {},
     final_message: str = None,
@@ -21,7 +25,19 @@ def notify(
     logger.info(f"Sending {subject} to {receivers} via {vias}")
     threaded = threaded if threaded is not None else NOTIFIER_THREADED
 
-    # TODO: add support to receivers = "admins", "staff", "all", "all-staff", "all-admins"
+    if isinstance(receivers, str) and receivers in ["admins", "staff", "all", "all-staff", "all-admins"]:
+        if receivers == "admins":
+            receivers = User.objects.filter(is_superuser=True)
+        elif receivers == "staff":
+            receivers = User.objects.filter(is_staff=True)
+        elif receivers == "all":
+            receivers = User.objects.all()
+        elif receivers == "all-staff":
+            receivers = User.objects.exclude(is_staff=True)
+        elif receivers == "all-admins":
+            receivers = User.objects.exclude(is_superuser=True)
+        else:
+            raise ValueError(f"'{receivers}' is not an allowed value for receivers arguments")
 
     for via in vias:
         try:
