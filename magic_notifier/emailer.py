@@ -1,15 +1,9 @@
-from django.core.mail import get_connection, send_mail
-from django.core.mail.message import EmailMessage
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from threading import Thread
-from django.conf import settings
 import traceback
-import re
-import unidecode
 import logging
 from django.utils.translation import gettext as _
-from django.utils.translation import activate
 from .utils import import_class
 from typing import Optional
 
@@ -34,7 +28,7 @@ class Emailer:
         self.connection = self.email_client.get_connection(self.email_settings)
         self.subject: str = subject
         self.receivers: list = receivers
-        self.template: str = template
+        self.template: Optional[str] = template
         self.context: dict = context if context else {}
         self.final_message = final_message
         self.threaded: bool = kwargs.get("threaded", False)
@@ -60,12 +54,12 @@ class Emailer:
 
                 if self.template:
                     html_content = render_to_string(
-                        "{}/email.html".format(self.template), ctx
+                        f"notifier/{self.template}/email.html", ctx
                     )  # render with dynamic value
                     logger.info(html_content)
 
                     text_content = render_to_string(
-                    "{}/email.txt".format(self.template), ctx
+                    f"notifier/{self.template}/email.txt", ctx
                     )  # render with dynamic value
                     logger.info(text_content)
                 else:

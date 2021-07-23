@@ -22,8 +22,11 @@ def notify(
     smtp_account: str = 'default',
     threaded: bool = None,
 ):
-    logger.info(f"Sending {subject} to {receivers} via {vias}")
+    logger.debug(f"Sending {subject} to {receivers} via {vias}")
     threaded = threaded if threaded is not None else NOTIFIER_THREADED
+
+    assert subject, "subject not defined"
+
 
     if isinstance(receivers, str) and receivers in ["admins", "staff", "all", "all-staff", "all-admins"]:
         if receivers == "admins":
@@ -38,6 +41,8 @@ def notify(
             receivers = User.objects.exclude(is_superuser=True)
         else:
             raise ValueError(f"'{receivers}' is not an allowed value for receivers arguments")
+
+    assert isinstance(receivers, list), f"receivers must be a list at this point not {receivers}"
 
     for via in vias:
         try:
@@ -54,10 +59,13 @@ def notify(
                 em.send()
 
             elif via == "sms":
-                ex_sms = ExternalSMS(receivers, template, context, threaded=threaded)
+                ex_sms = ExternalSMS(receivers,context, threaded=threaded,
+                    template=template, final_message=final_message)
                 ex_sms.send()
 
             elif via == "push":
+                assert template, "template variable can't be None or empty"
+
                 pusher = Pusher(
                     subject, receivers, template, context, threaded=threaded
                 )

@@ -4,16 +4,19 @@ import logging
 import traceback
 from .settings import NOTIFIER_SMS_CLIENT
 import importlib
+from typing import Optional
 
 logger = logging.getLogger("notifier")
 
 
 class ExternalSMS:
-    def __init__(self, receivers: list, template: str, context: dict, **kwargs):
+
+    def __init__(self, receivers: list, context: dict, template: Optional[str]=None, final_message: Optional[str]=None, **kwargs):
         self.receivers: list = receivers
-        self.template: str = template
+        self.template: Optional[str] = template
         self.context: dict = context
         self.threaded: bool = kwargs.get("threaded", False)
+        self.final_message: Optional[str] = final_message
 
         module_name, class_name = NOTIFIER_SMS_CLIENT.rsplit(".", 1)
         module = importlib.import_module(module_name)
