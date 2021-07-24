@@ -1,8 +1,10 @@
-from magic_notifier.models import Notification
-import traceback
-from django.contrib.auth import get_user_model
 import importlib
-import  logging
+import logging
+import traceback
+
+from django.contrib.auth import get_user_model
+
+from magic_notifier.models import Notification
 
 logger = logging.getLogger('notifier')
 

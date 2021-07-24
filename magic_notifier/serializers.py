@@ -1,4 +1,5 @@
 from rest_framework.serializers import ModelSerializer
+
 from magic_notifier.models import Notification
 
 

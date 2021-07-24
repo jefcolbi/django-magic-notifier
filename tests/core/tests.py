@@ -1,7 +1,8 @@
-from django.test import TestCase
-from django.contrib.auth import  get_user_model
-from magic_notifier.notifier import notify
+from django.contrib.auth import get_user_model
 from django.core import mail
+from django.test import TestCase
+
+from magic_notifier.notifier import notify
 
 User = get_user_model()
 

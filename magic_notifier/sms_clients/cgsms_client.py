@@ -1,5 +1,7 @@
-import requests
 import logging
+
+import requests
+
 from notifier.
 
 logger = logging.getLogger("notif")

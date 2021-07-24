@@ -1,11 +1,13 @@
+import logging
+import traceback
+from threading import Thread
+from typing import Optional
+
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from threading import Thread
-import traceback
-import logging
 from django.utils.translation import gettext as _
+
 from .utils import import_class
-from typing import Optional
 
 logger = logging.getLogger("notifier")
 

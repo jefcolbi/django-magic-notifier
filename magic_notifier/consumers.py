@@ -1,17 +1,18 @@
+import binascii
+import ctypes
 import json
-from channels.generic.websocket import WebsocketConsumer
 import logging
 import traceback
-from channels.db import database_sync_to_async
-import ctypes
-from pathlib import Path
-import binascii
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.authtoken.models import Token
 from datetime import date, datetime, timedelta
+from pathlib import Path
+
+from channels.db import database_sync_to_async
+from channels.generic.websocket import WebsocketConsumer
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 from notif.models import Notification
 from notif.models_serializers import NotificationSerializer
-from django.utils import timezone
+from rest_framework.authtoken.models import Token
 
 logger = logging.getLogger("notif")
 

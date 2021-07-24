@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from magic_notifier.models import Notification
 
 

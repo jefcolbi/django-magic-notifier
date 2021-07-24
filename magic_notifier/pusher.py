@@ -1,14 +1,18 @@
-from threading import Thread
-from django.template.loader import render_to_string
 import logging
 import traceback
+from threading import Thread
+
+from django.template.loader import render_to_string
+
 try:
-    from channels.layers import get_channel_layer
     from asgiref.sync import async_to_sync
+    from channels.layers import get_channel_layer
 except:
     pass
-from django.template import Template, Context
 import json
+
+from django.template import Context, Template
+
 from magic_notifier.utils import NotificationBuilder
 
 logger = logging.getLogger("notif")

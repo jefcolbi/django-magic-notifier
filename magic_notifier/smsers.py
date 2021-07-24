@@ -1,10 +1,12 @@
-from threading import Thread
-from django.template.loader import render_to_string
+import importlib
 import logging
 import traceback
-from .settings import NOTIFIER_SMS_CLIENT
-import importlib
+from threading import Thread
 from typing import Optional
+
+from django.template.loader import render_to_string
+
+from .settings import NOTIFIER_SMS_CLIENT
 
 logger = logging.getLogger("notifier")
 

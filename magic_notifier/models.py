@@ -1,8 +1,10 @@
-from django.db import models
-from django.contrib.auth import get_user_model
-from django.utils.translation import gettext as _
 import json
+
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils.translation import gettext as _
+
 try:
     from django.contrib.postgres.fields import JSONField
 except:
@@ -88,6 +90,6 @@ class Notification(models.Model):
         return super().save(*args, **kwargs)
 
     def mark_read(self):
-        from django.utils import  timezone
+        from django.utils import timezone
         self.read = timezone.now()
         self.save()
