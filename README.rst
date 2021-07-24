@@ -3,6 +3,27 @@ Django Magic Notifier
 ********
 A notifications library for Djangonauts
 
+.. image:: https://travis-ci.org/django-magic-notifier/django-magic-notifier.svg?branch=master
+    :target: https://travis-ci.org/django-magic-notifier/django-magic-notifier
+    :alt: Build status on Travis-CI
+
+.. image:: https://coveralls.io/repos/github/django-magic-notifier/django-magic-notifier/badge.svg?branch=master
+    :target: https://coveralls.io/github/django-magic-notifier/django-magic-notifier?branch=master
+
+.. image:: https://img.shields.io/pypi/v/django-magic-notifier.svg
+    :target: https://pypi.org/project/django-magic-notifier/
+    :alt: Current version on PyPi
+
+.. image:: http://readthedocs.org/projects/django-magic-notifier/badge/?version=stable
+    :target: https://django-magic-notifier.readthedocs.io/en/stable/
+    :alt: Documentation
+
+.. image:: https://img.shields.io/pypi/pyversions/django-magic-notifier
+    :alt: PyPI - Python Version
+
+.. image:: https://img.shields.io/pypi/djversions/django-magic-notifier
+    :alt: PyPI - Django Version
+
 
 Why Django Magic Notifier?
 -------------
