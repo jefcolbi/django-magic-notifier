@@ -24,6 +24,18 @@ def notify(
     smtp_account: str = 'default',
     threaded: bool = None,
 ):
+    """Send a notification
+
+    :param vias: list of sendin method. can be email|sms|push
+    :param subject: the subject of the notification
+    :param receivers: the receivers list. can be a list of user instances or a string representing users like admins|staff|all|all-staff|all-admins
+    :param template: the email template. ignored if final message is passed
+    :param context: the context
+    :param final_message: the direct content of the notification
+    :param smtp_account: the smtp account to use
+    :param threaded: if the notification must be send via a worker thread
+    :return:
+    """
     logger.debug(f"Sending {subject} to {receivers} via {vias}")
     threaded = threaded if threaded is not None else NOTIFIER_THREADED
 

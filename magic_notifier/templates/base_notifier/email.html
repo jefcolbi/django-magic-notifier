@@ -1,3 +1,4 @@
+{% load i18n %}
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
@@ -105,7 +106,7 @@
                   <tbody>
                     <tr>
                       <td align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                        <div style="font-family:helvetica;font-size:32px;line-height:1;text-align:center;color:blue;">Get your Job - Yaknema</div>
+                        <div style="font-family:helvetica;font-size:32px;line-height:1;text-align:center;color:blue;">{% block product_name %}{% trans "Product Name" %}{% endblock %}</div>
                       </td>
                     </tr>
                     <tr>
@@ -137,7 +138,7 @@
                   <tbody>
                     <tr>
                       <td align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                        <div style="font-family:Helvetica Neue;font-size:28px;line-height:1;text-align:center;color:white;">{% block h1_title %}New Jobs available for you{% endblock %}</div>
+                        <div style="font-family:Helvetica Neue;font-size:28px;line-height:1;text-align:center;color:white;">{% block h1_title %}{% trans "H1 title" %}{% endblock %}</div>
                       </td>
                     </tr>
                   </tbody>
@@ -183,7 +184,7 @@
                   <tbody>
                     <tr>
                       <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:left;color:#000000;"><a href="https://getyourjob.yaknema.com/unsuscribe/?email={{ user.email }}">Unsuscribe here</a></div>
+                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:left;color:#000000;">{% block footer_unsuscribe %}<a href="#">{% trans "Unsuscribe here" %}</a>{% endblock %}</div>
                       </td>
                     </tr>
                   </tbody>
@@ -195,7 +196,7 @@
                   <tbody>
                     <tr>
                       <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:left;color:#000000;"><a href="https://getyourjob.yaknema.com/">Get Your Job</a></div>
+                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:left;color:#000000;">{% block footer_product_name %}<a href="#">Product Name</a>{% endblock %}</div>
                       </td>
                     </tr>
                   </tbody>
@@ -207,7 +208,7 @@
                   <tbody>
                     <tr>
                       <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:left;color:#000000;"><a href="https://yaknema.com/">Yaknema</a></div>
+                        <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:left;color:#000000;">{% block footer_company_name %}<a href="#">Company Name</a>{% endblock %}</div>
                       </td>
                     </tr>
                   </tbody>

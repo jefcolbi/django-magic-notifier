@@ -4,6 +4,7 @@ from threading import Thread
 from typing import Optional
 
 from django.core.mail import EmailMultiAlternatives
+from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 
@@ -51,19 +52,21 @@ class Emailer:
 
                 ctx = self.context.copy()
                 ctx["user"] = user
-                logger.info(f"===== user name {user.username}")
-                logger.info(ctx)
+                logger.info(f" Sending to user {user.username} with context {ctx}")
 
                 if self.template:
-                    html_content = render_to_string(
-                        f"notifier/{self.template}/email.html", ctx
-                    )  # render with dynamic value
-                    logger.info(html_content)
+                    try:
+                        html_content = render_to_string(
+                            f"notifier/{self.template}/email.html", ctx
+                        )  # render with dynamic value
+                        logger.debug(html_content)
+                    except TemplateDoesNotExist:
+                        html_content = None
 
                     text_content = render_to_string(
                     f"notifier/{self.template}/email.txt", ctx
                     )  # render with dynamic value
-                    logger.info(text_content)
+                    logger.debug(text_content)
                 else:
                     html_content = text_content = self.final_message
 
@@ -74,7 +77,8 @@ class Emailer:
                     [user.email],
                     connection=self.connection,
                 )
-                msg.attach_alternative(html_content, "text/html")
+                if html_content:
+                    msg.attach_alternative(html_content, "text/html")
                 msg.send()
         except:
             logger.error(traceback.format_exc())

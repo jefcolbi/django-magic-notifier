@@ -1,5 +1,3 @@
 {% load i18n %}
 {% block content %}
 {% endblock %}
-
-Yaknema - {% trans "The best E-Commerce platform" %}

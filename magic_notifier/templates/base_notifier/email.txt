@@ -2,4 +2,4 @@
 {% block content %}
 {% endblock %}
 
-{% trans "If you do not wish to receive any further emails from us, please" %} <a href="https://getyourjob.yaknema.com/unsuscribe/?email={{ user.email }}" target="_blank">{% trans "unsubscribe" %}</a>
+{% block footer_unsuscribe %}{% trans "If you do not wish to receive any further emails from us, please" %} <a href="#" target="_blank">{% trans "Unsubscribe" %}</a>{% endblock %}

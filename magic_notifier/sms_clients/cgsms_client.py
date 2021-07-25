@@ -2,23 +2,18 @@ import logging
 
 import requests
 
-from notifier.
-
-logger = logging.getLogger("notif")
+logger = logging.getLogger("notifier")
 
 
 class CGSmsClient:
-    sub_account = "jefcolbi@gmail.com"
-    sub_account_pass = "cheapglobalsms01$"
+    sub_account = ""
+    sub_account_pass = ""
 
     def __init__(self, number, text):
         pass
 
     @classmethod
     def send(cls, number: str, text: str):
-        logger.info(f"Sending SMS {text} TO {number}")
-        if not number.startswith("+237"):
-            number = f"+237{number}"
         params = {
             "sub_account": cls.sub_account,
             "sub_account_pass": cls.sub_account_pass,
@@ -32,4 +27,4 @@ class CGSmsClient:
 
 
 if __name__ == "__main__":
-    CGSmsClient.send("693480847", "Cava ma tigresse")
+    CGSmsClient.send("0000000000", "Cava ma tigresse")
