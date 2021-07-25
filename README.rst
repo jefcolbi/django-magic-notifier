@@ -1,10 +1,5 @@
-====================
 Django Magic Notifier
-====================
-
-
-A notifications library for Djangonauts
-
+=====================
 
 .. image:: https://api.travis-ci.com/jefcolbi/django-magic-notifier.svg?branch=main
     :target: https://travis-ci.com/github/jefcolbi/django-magic-notifier
