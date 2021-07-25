@@ -32,32 +32,27 @@ A notifications library for Djangonauts
     :alt: PR Welcomes
 
 
-**************************
 Why Django Magic Notifier?
-**************************
+--------------------------
 
 Sending notifications in Django has always been a complex subject. Django Magic Notifier solves this by
 providing only one function **notify()**. The library [will] support sending notifications via email, sms and push notifications.
 
-************
 Installation
-************
+--------------------------
 
 ``$pip install --upgrade django-magic-notifier``
 
-********
 Features
-********
+--------
 
-    - Send emails
-    - Email templates
+- Send emails
+- Email templates
 
-*****
 Usage
-*****
+-----
 
-1. Configure Settings
-^^^^^^^^^^^^^^^^^^^^^
+**1. Configure Settings**
 
 If you have already configured SMTP SETTINGS via django settings then can ignore this step. Else add a NOTIFIER dict in your settings like this::
 
@@ -77,8 +72,8 @@ If you have already configured SMTP SETTINGS via django settings then can ignore
         "THREADED": False,
     }
 
-2. Create email templates
-^^^^^^^^^^^^^^^^^^^^^^^^^
+**2. Create email templates**
+
 Create a folder named **notifier** in one of app's templates dir. In this folder create another folder named **base** then created your base templates in this folder. Example
 
 *core/templates/notifier/base/email.html*::
@@ -126,27 +121,27 @@ To send a notification via email do::
     notify(["email"], subject, [user], template='hello')
 
 
-****************
 Docs and support
-****************
+----------------
+
 Coming
 
-*******
+
 Roadmap
-*******
-    - [] Send sms
-    - [] Send push notifications
-    - [] Generate full documentation
-    - [] Translate documentation
+-------
 
-************
+- [] Send sms
+- [] Send push notifications
+- [] Generate full documentation
+- [] Translate documentation
+
+
 Contributing
-************
+-----------
 
-Contribution are welcome and required.
+Contribution are welcome.
 
-*******
 License
-*******
+-------
 
 As per the license, feel free to use the library as you want.
