@@ -1,6 +1,6 @@
-=======================================
+====================
 Django Magic Notifier
-=======================================
+====================
 
 
 A notifications library for Djangonauts
@@ -27,6 +27,9 @@ A notifications library for Djangonauts
 
 .. image:: https://img.shields.io/pypi/djversions/django-magic-notifier
     :alt: PyPI - Django Version
+
+.. image:: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat
+    :alt: PR Welcomes
 
 
 **************************
@@ -87,8 +90,7 @@ Create a folder named **notifier** in one of app's templates dir. In this folder
     {% extends "base_notifier/email.txt" %}
 
 
-*core/templates/notifier/hello/email.html
-*::
+*core/templates/notifier/hello/email.html*::
 
     {% extends "notifier/base/email.html" %}
     {% block content %}
