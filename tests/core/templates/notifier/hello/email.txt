@@ -1,0 +1,5 @@
+{% extends "notifier/base/email.txt" %}
+
+{% block content %}
+Hello
+{% endblock %}

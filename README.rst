@@ -1,7 +1,10 @@
 =======================================
 Django Magic Notifier
 =======================================
+
+
 A notifications library for Djangonauts
+
 
 .. image:: https://api.travis-ci.com/jefcolbi/django-magic-notifier.svg?branch=main
     :target: https://travis-ci.com/github/jefcolbi/django-magic-notifier
@@ -53,9 +56,7 @@ Usage
 1. Configure Settings
 ^^^^^^^^^^^^^^^^^^^^^
 
-If you have already configured SMTP SETTINGS via django settings then can ignore this step. Else add a NOTIFIER dict in your settings like this
-
-.. code-block:: python
+If you have already configured SMTP SETTINGS via django settings then can ignore this step. Else add a NOTIFIER dict in your settings like this::
 
     NOTIFIER = {
         "SMTP": {
@@ -77,22 +78,17 @@ If you have already configured SMTP SETTINGS via django settings then can ignore
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 Create a folder named **notifier** in one of app's templates dir. In this folder create another folder named **base** then created your base templates in this folder. Example
 
-*core/templates/notifier/base/email.html*
-
-.. code-block:: html
+*core/templates/notifier/base/email.html*::
 
     {% extends "base_notifier/email.html" %}
 
-*core/templates/notifier/base/email.txt*
-
-.. code-block:: html
+*core/templates/notifier/base/email.txt*::
 
     {% extends "base_notifier/email.txt" %}
 
 
 *core/templates/notifier/hello/email.html
-*
-.. code-block:: html
+*::
 
     {% extends "notifier/base/email.html" %}
     {% block content %}
@@ -102,9 +98,7 @@ Create a folder named **notifier** in one of app's templates dir. In this folder
     </tr>
     {% endblock %}
 
-*core/templates/notifier/hello/email.txt*
-
-.. code-block:: html
+*core/templates/notifier/hello/email.txt*::
 
     {% extends "notifier/hello/email.txt" %}
     {% block content %}
@@ -115,9 +109,7 @@ As you can see, the user to whom the notification goes is automatically added in
 
 Note that it is DMN (Django Magic Notifier) that has the base_notifier template.
 
-To send a notification via email do
-
-.. code-block:: python
+To send a notification via email do::
 
     from magic_notifier.notifier import notify
 

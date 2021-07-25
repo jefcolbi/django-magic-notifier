@@ -1,0 +1,1 @@
+{% extends "base_notifier/email.txt" %}
