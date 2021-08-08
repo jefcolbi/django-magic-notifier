@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.core.management import call_command
 from django.test import TestCase
 
 from magic_notifier.notifier import notify
@@ -43,4 +44,13 @@ class EmailTestCase(TestCase):
         first_message = mail.outbox[0] # type: ignore
         self.assertEqual(first_message.to, [user.email])
         self.assertEqual(first_message.subject, subject)
+        self.assertEqual(len(first_message.alternatives), 0)
+
+    def test_command_test_email_template(self):
+        call_command('test_email_template', 'hello', 'testuser@localhost')
+
+        self.assertGreater(len(mail.outbox), 0) # type: ignore
+        first_message = mail.outbox[0] # type: ignore
+        self.assertEqual(first_message.to, ['testuser@localhost'])
+        self.assertEqual(first_message.subject, 'Testing email template')
         self.assertEqual(len(first_message.alternatives), 0)

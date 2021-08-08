@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from magic_notifier.emailer import Emailer
 from magic_notifier.pusher import Pusher
 from magic_notifier.settings import NOTIFIER_THREADED
-from magic_notifier.smsers import ExternalSMS
+from magic_notifier.smser import ExternalSMS
 
 User = get_user_model()
 

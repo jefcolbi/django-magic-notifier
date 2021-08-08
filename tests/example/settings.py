@@ -127,6 +127,7 @@ NOTIFIER = {
             "HOST": "localhost",
             "PORT": 587,
             "USE_TLS": True,
+            "USE_SSL": False,
             "USER": "root@localhost",
             "FROM": "Root <root@localhost>",
             "PASSWORD": "********",

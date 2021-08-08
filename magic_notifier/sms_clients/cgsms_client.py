@@ -1,30 +1,28 @@
 import logging
 
 import requests
+from django.conf import settings
+
+from .base import BaseSmsClient
 
 logger = logging.getLogger("notifier")
 
 
-class CGSmsClient:
-    sub_account = ""
-    sub_account_pass = ""
-
-    def __init__(self, number, text):
-        pass
+class CGSmsClient(BaseSmsClient):
 
     @classmethod
     def send(cls, number: str, text: str):
+        sub_account = settings.NOTIFIER["CGS"]["SUB_ACCOUNT"]
+        sub_account_pass = settings.NOTIFIER["CGS"]["SUB_ACCOUNT_PASSWORD"]
         params = {
-            "sub_account": cls.sub_account,
-            "sub_account_pass": cls.sub_account_pass,
+            "sub_account": sub_account,
+            "sub_account_pass": sub_account_pass,
             "action": "send_sms",
             "message": text,
             "recipients": number,
         }
         res = requests.get("http://cheapglobalsms.com/api_v1", params=params)
-        # print(res.content)
-        # print(res.json())
-
+        return res
 
 if __name__ == "__main__":
     CGSmsClient.send("0000000000", "Cava ma tigresse")
