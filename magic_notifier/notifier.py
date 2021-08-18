@@ -22,6 +22,7 @@ def notify(
     context: dict = {},
     final_message: str = None,
     smtp_account: str = 'default',
+    files: list = None,
     threaded: bool = None,
 ):
     """Send a notification
@@ -69,6 +70,7 @@ def notify(
                     smtp_account,
                     threaded=threaded,
                     final_message=final_message,
+                    files=files
                 )
                 em.send()
 

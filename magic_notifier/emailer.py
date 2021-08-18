@@ -7,6 +7,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
+from django.contrib.auth.models import User
 
 from .utils import import_class
 
@@ -22,6 +23,7 @@ class Emailer:
         context: dict,
         smtp_account: str='default',
         final_message: str = None,
+        files: list = None,
         **kwargs,
     ):
         from magic_notifier.settings import NOTIFIER_SMTP
@@ -35,6 +37,7 @@ class Emailer:
         self.context: dict = context if context else {}
         self.final_message = final_message
         self.threaded: bool = kwargs.get("threaded", False)
+        self.files: list = files
 
     def send(self):
         if self.threaded:
@@ -49,6 +52,8 @@ class Emailer:
             logger.info(f"sending emails to {self.receivers}")
             for user in self.receivers:
                 # activate(user.settings.lang)
+                if isinstance(user, str):
+                    user = User(email=user, username=user)
 
                 ctx = self.context.copy()
                 ctx["user"] = user
@@ -79,6 +84,21 @@ class Emailer:
                 )
                 if html_content:
                     msg.attach_alternative(html_content, "text/html")
+
+                if self.files:
+                    for i, pos_file in enumerate(self.files):
+                        if isinstance(pos_file, str):
+                            msg.attach_file(pos_file)
+                        elif isinstance(pos_file, tuple):
+                            name, f = pos_file
+                            if hasattr(f, 'read'):
+                                msg.attach(name, f.read())
+                            else:
+                                logging.warning(f"file {name} can't be added to mail because it is not a file-like object")
+                        elif hasattr(pos_file, 'read'):
+                            msg.attach(f"file {i+1}", pos_file.read())
+                        else:
+                            logging.warning(f"discarding possible file {pos_file}")
                 msg.send()
         except:
             logger.error(traceback.format_exc())
