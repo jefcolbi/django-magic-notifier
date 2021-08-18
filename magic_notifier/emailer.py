@@ -3,11 +3,11 @@ import traceback
 from threading import Thread
 from typing import Optional
 
+from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
-from django.contrib.auth.models import User
 
 from .utils import import_class
 

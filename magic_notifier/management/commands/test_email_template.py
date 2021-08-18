@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
+
 from magic_notifier.notifier import notify
 
 User = get_user_model()
