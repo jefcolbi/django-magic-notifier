@@ -21,8 +21,8 @@ if SMTP_ACTIVE:
         # we build the default dict from django standard smtp settings
         assert settings.SMTP_HOST, "You have not defined any DEFAULT SMTP settings and no django smtp settings detected."
         NOTIFIER_SMTP["default"] = {
-            "HOST": settings.SMTP_HOST,
-            "PORT": settings.SMTP_PORT,
+            "HOST": settings.EMAIL_HOST,
+            "PORT": settings.EMAIL_PORT,
             "USER": settings.EMAIL_HOST_USER,
             "FROM": settings.DEFAULT_FROM_EMAIL,
             "PASSWORD": settings.EMAIL_HOST_PASSWORD,
