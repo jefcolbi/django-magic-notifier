@@ -1,8 +1,9 @@
 import logging
 import traceback
-from typing import Union
+from typing import Union, Optional
 
 from django.contrib.auth import get_user_model
+from django.db import models
 
 from magic_notifier.emailer import Emailer
 from magic_notifier.pusher import Pusher
@@ -17,11 +18,12 @@ logger = logging.getLogger("notifier")
 def notify(
     vias: list,
     subject: str = None,
-    receivers: Union[str, list] = None,
+    receivers: Union[str, list, models.QuerySet, models.Manager] = None,
     template: str = None,
     context: dict = {},
     final_message: str = None,
     smtp_account: str = 'default',
+    sms_gateway: Optional[str] = None,
     files: list = None,
     threaded: bool = None,
 ):
@@ -57,7 +59,7 @@ def notify(
         else:
             raise ValueError(f"'{receivers}' is not an allowed value for receivers arguments")
 
-    assert isinstance(receivers, list), f"receivers must be a list at this point not {receivers}"
+    assert isinstance(receivers, (list, models.Manager, models.QuerySet)), f"receivers must be a list at this point not {receivers}"
 
     for via in vias:
         try:
@@ -76,7 +78,8 @@ def notify(
 
             elif via == "sms":
                 ex_sms = ExternalSMS(receivers,context, threaded=threaded,
-                    template=template, final_message=final_message)
+                    template=template, final_message=final_message,
+                    sms_gateway=sms_gateway)
                 ex_sms.send()
 
             elif via == "push":

@@ -1,3 +1,4 @@
+from tests.example.settings import NOTIFIER
 from django.conf import settings
 
 AVAILABLE_MODES = [("user", "User"), ("admin", "Admin")]
@@ -9,8 +10,6 @@ PUSH_ACTIVE = NOTIFIER_SETTINGS.get('PUSH_ACTIVE', False)
 
 NOTIFIER_AVAILABLE_MODES = NOTIFIER_SETTINGS.get('DEFAULT_MODES', AVAILABLE_MODES)
 NOTIFIER_DEFAULT_MODE = NOTIFIER_SETTINGS.get("DEFAULT_MODE", "user")
-
-NOTIFIER_SMS_CLIENT = NOTIFIER_SETTINGS.get('SMS_CLIENT', "notifier.sms_client.CGSmsClient")
 
 NOTIFIER_THREADED = NOTIFIER_SETTINGS.get('THREADED', False)
 
@@ -30,3 +29,7 @@ if SMTP_ACTIVE:
             "USE_TLS": getattr(settings, "EMAIL_USE_TLS", False),
             "CLIENT": "magic_notifier.email_clients.django_email.DjangoEmailClient"
         }
+
+NOTIFIER_SMS = NOTIFIER_SETTINGS.get('SMS', {})
+NOTIFIER_SMS_DEFAULT_GATEWAY = NOTIFIER_SETTINGS.get('DEFAULT_GATEWAY', 'default')
+NOTIFIER_SMS_GATEWAYS = NOTIFIER_SETTINGS.get('GATEWAYS', {})

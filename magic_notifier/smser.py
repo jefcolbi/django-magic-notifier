@@ -6,19 +6,24 @@ from typing import Optional
 
 from django.template.loader import render_to_string
 
-from .settings import NOTIFIER_SMS_CLIENT
+from .settings import NOTIFIER_SMS_GATEWAYS, NOTIFIER_SMS_DEFAULT_GATEWAY
 
 logger = logging.getLogger("notifier")
 
 
 class ExternalSMS:
 
-    def __init__(self, receivers: list, context: dict, template: Optional[str]=None, final_message: Optional[str]=None, **kwargs):
+    def __init__(self, receivers: list, context: dict, template: Optional[str]=None,
+        final_message: Optional[str]=None, sms_gateway: Optional[str]=None, **kwargs):
         self.receivers: list = receivers
         self.template: Optional[str] = template
         self.context: dict = context
         self.threaded: bool = kwargs.get("threaded", False)
         self.final_message: Optional[str] = final_message
+        self.sms_gateway = NOTIFIER_SMS_DEFAULT_GATEWAY if sms_gateway is None else sms_gateway
+
+        NOTIFIER_SMS_GATEWAY = NOTIFIER_SMS_GATEWAYS[self.sms_gateway]
+        NOTIFIER_SMS_CLIENT = NOTIFIER_SMS_GATEWAY["CLIENT"]
 
         module_name, class_name = NOTIFIER_SMS_CLIENT.rsplit(".", 1)
         module = importlib.import_module(module_name)
@@ -38,7 +43,10 @@ class ExternalSMS:
             for rec in self.receivers:
                 ctx = self.context.copy()
                 ctx["user"] = rec
-                sms_content = render_to_string("{}/sms.txt".format(self.template), ctx)
+                if self.final_message:
+                    sms_content = self.final_message
+                else:
+                    sms_content = render_to_string("{}/sms.txt".format(self.template), ctx)
 
                 self.client_class.send(rec.number, sms_content)
         except:
