@@ -1,15 +1,16 @@
 import json
 
+from django import VERSION as DJANGO_VERSION
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext as _
 
-try:
-    from django.contrib.postgres.fields import JSONField
-except:
+if DJANGO_VERSION[0] >= 3 and DJANGO_VERSION[1] >= 1:
+    from django.db.models import JSONField
+else:
     try:
-        from django.db.models import JSONField
+        from django.contrib.postgres.fields import JSONField
     except:
         class JSONField(models.TextField):
             """Simple JSON field that stores python structures as JSON strings

@@ -94,17 +94,11 @@ class Emailer:
                             if hasattr(f, 'read'):
                                 msg.attach(name, f.read())
                             else:
-                                logging.warning(f"file {name} can't be added to mail because it is not a file-like object")
+                                logger.warning(f"file {name} can't be added to mail because it is not a file-like object")
                         elif hasattr(pos_file, 'read'):
                             msg.attach(f"file {i+1}", pos_file.read())
                         else:
-                            logging.warning(f"discarding possible file {pos_file}")
+                            logger.warning(f"discarding possible file {pos_file}")
                 msg.send()
         except:
             logger.error(traceback.format_exc())
-            print(traceback.format_exc())
-
-
-if __name__ == "__main__":
-    emailer = Emailer("Reset code", ["jefcolbi@gmail.com"], "reset", {}, "account")
-    emailer.send()

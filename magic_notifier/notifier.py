@@ -45,17 +45,18 @@ def notify(
     assert subject, "subject not defined"
 
 
-    if isinstance(receivers, str) and receivers in ["admins", "staff", "all", "all-staff", "all-admins"]:
-        if receivers == "admins":
-            receivers = User.objects.filter(is_superuser=True)
-        elif receivers == "staff":
-            receivers = User.objects.filter(is_staff=True)
-        elif receivers == "all":
-            receivers = User.objects.all()
-        elif receivers == "all-staff":
-            receivers = User.objects.exclude(is_staff=True)
-        elif receivers == "all-admins":
-            receivers = User.objects.exclude(is_superuser=True)
+    if isinstance(receivers, str):
+        if receivers in ["admins", "staff", "all", "all-staff", "all-admins"]:
+            if receivers == "admins":
+                receivers = User.objects.filter(is_superuser=True)
+            elif receivers == "staff":
+                receivers = User.objects.filter(is_staff=True)
+            elif receivers == "all":
+                receivers = User.objects.all()
+            elif receivers == "all-staff":
+                receivers = User.objects.exclude(is_staff=True)
+            elif receivers == "all-admins":
+                receivers = User.objects.exclude(is_superuser=True)
         else:
             raise ValueError(f"'{receivers}' is not an allowed value for receivers arguments")
 
@@ -66,7 +67,7 @@ def notify(
             if via == "email":
                 em = Emailer(
                     subject,
-                    receivers,
+                    list(receivers),
                     template,
                     context,
                     smtp_account,
