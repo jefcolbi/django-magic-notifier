@@ -1,7 +1,7 @@
 import logging
 
-from twilio.rest import Client
 from django.conf import settings
+from twilio.rest import Client
 
 from .base import BaseSmsClient
 

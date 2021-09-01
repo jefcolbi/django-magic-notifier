@@ -1,5 +1,6 @@
-from tests.example.settings import NOTIFIER
 from django.conf import settings
+
+from tests.example.settings import NOTIFIER
 
 AVAILABLE_MODES = [("user", "User"), ("admin", "Admin")]
 NOTIFIER_SETTINGS = getattr(settings, "NOTIFIER", {})

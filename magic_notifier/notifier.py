@@ -1,6 +1,6 @@
 import logging
 import traceback
-from typing import Union, Optional
+from typing import Optional, Union
 
 from django.contrib.auth import get_user_model
 from django.db import models

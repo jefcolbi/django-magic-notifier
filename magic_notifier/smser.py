@@ -6,7 +6,7 @@ from typing import Optional
 
 from django.template.loader import render_to_string
 
-from .settings import NOTIFIER_SMS_GATEWAYS, NOTIFIER_SMS_DEFAULT_GATEWAY
+from .settings import NOTIFIER_SMS_DEFAULT_GATEWAY, NOTIFIER_SMS_GATEWAYS
 
 logger = logging.getLogger("notifier")
 
