@@ -149,6 +149,21 @@ class EmailTestCase(TestCase):
             self.assertEqual(len(first_message.alternatives), 0)
             self.assertGreater(len(first_message.attachments), 0)
 
+    def test_template_txt_with_user_with_files_bad(self):
+        user = User(email="testuser@localhost", username="testuser")
+
+        subject = "Test magic notifier"
+        with open(str(Path(__file__).parent / "models.py")) as fp:
+            notify(["email"], subject, [user], template='hello',
+                files=[1])
+
+            self.assertGreater(len(mail.outbox), 0) # type: ignore
+            first_message = mail.outbox[0] # type: ignore
+            self.assertEqual(first_message.to, [user.email])
+            self.assertEqual(first_message.subject, subject)
+            self.assertEqual(len(first_message.alternatives), 0)
+            self.assertEqual(len(first_message.attachments), 0)
+
     def test_template_txt_with_user_with_files_filelike(self):
         user = User(email="testuser@localhost", username="testuser")
 
