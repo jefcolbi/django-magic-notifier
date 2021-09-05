@@ -19,6 +19,6 @@ script:
    - PYTHONPATH=".:tests:$PYTHONPATH"  tests/manage.py makemigrations
    - PYTHONPATH=".:tests:$PYTHONPATH"  tests/manage.py migrate
    - PYTHONPATH=".:tests:$PYTHONPATH" python -Wall -m coverage run --omit='setup.py' --source=. tests/manage.py test core --settings=
-   - if python -c 'import sys; sys.exit(1 - (sys.version_info >= (3, 6)))'; then isort --check-only magic_notifier tests; fi
+#   - if python -c 'import sys; sys.exit(1 - (sys.version_info >= (3, 6)))'; then isort --check-only magic_notifier tests; fi
 after_success:
   - coveralls
