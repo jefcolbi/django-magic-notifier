@@ -133,5 +133,5 @@ NOTIFIER = {
             "PASSWORD": "********",
             "CLIENT": "magic_notifier.email_clients.django_email.DjangoEmailClient",
         }
-    }
+    },
 }

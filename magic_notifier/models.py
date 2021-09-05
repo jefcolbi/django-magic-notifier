@@ -1,9 +1,12 @@
 import json
+from operator import mod
 
 from django import VERSION as DJANGO_VERSION
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.deletion import CASCADE
+from django.db.models.fields.related import ForeignKey, OneToOneField
 from django.utils.translation import gettext as _
 
 if DJANGO_VERSION[0] >= 3 and DJANGO_VERSION[1] >= 1:
@@ -64,6 +67,7 @@ User = get_user_model()
 
 class Notification(models.Model):
 
+    id = models.BigAutoField(primary_key=True)
     user: models.ForeignKey = models.ForeignKey(
         User, models.CASCADE, null=True, blank=True, related_name="magic_notifications"
     )
@@ -94,3 +98,11 @@ class Notification(models.Model):
         from django.utils import timezone
         self.read = timezone.now()
         self.save()
+
+
+class NotifyProfile(models.Model):
+
+    id = models.BigAutoField(primary_key=True)
+    phone_number: models.CharField = models.CharField(max_length=20, null=True, blank=True)
+    current_channel: models.CharField = models.CharField(max_length=255, null=True, blank=True)
+    user: models.OneToOneField = models.OneToOneField(User, models.CASCADE)

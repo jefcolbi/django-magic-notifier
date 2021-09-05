@@ -1,11 +1,15 @@
+import json
 import time
 from pathlib import Path
+from unittest import mock
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
+from magic_notifier.models import NotifyProfile
 from magic_notifier.notifier import notify
 
 User = get_user_model()
@@ -217,3 +221,140 @@ class EmailTestCase(TestCase):
         subject = "Test magic notifier"
         notify(["unknown"], subject, "all-staff", final_message="Nice if you get this")
         self.assertEqual(len(mail.outbox), 0) # type: ignore
+
+
+sms_outbox = []
+
+class Sms:
+
+    def __init__(self, number, message):
+        self.number = number
+        self.message = message
+
+def send_to_sms_outbox(*args, **kwargs):
+    params = kwargs.get('params')
+    data = kwargs.get('data')
+    if params:
+        sms_outbox.append(Sms(params['recipients'], params['message']))
+    else:
+        sms_outbox.append(Sms(data['To'], data['Body']))
+        from twilio.http.response import Response
+
+        return mock.MagicMock(spec=Response, status_code=200,
+            text=json.dumps({
+                      "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                      "api_version": "2010-04-01",
+                      "body": "Hi there",
+                      "date_created": "Thu, 30 Jul 2015 20:12:31 +0000",
+                      "date_sent": "Thu, 30 Jul 2015 20:12:33 +0000",
+                      "date_updated": "Thu, 30 Jul 2015 20:12:33 +0000",
+                      "direction": "outbound-api",
+                      "error_code": None,
+                      "error_message": None,
+                      "from": "+15017122661",
+                      "messaging_service_sid": "MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                      "num_media": "0",
+                      "num_segments": "1",
+                      "price": None,
+                      "price_unit": None,
+                      "sid": "SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                      "status": "sent",
+                      "subresource_uris": {
+                        "media": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Media.json"
+                      },
+                      "to": "+15558675310",
+                      "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json"
+                    }))
+
+
+def notifier_settings_for_global_cheap(*args, **kwargs):
+    if args[0] == "NOTIFIER_SMS_DEFAULT_GATEWAY":
+        return "CGS"
+    elif args[0] == "NOTIFIER_SMS_GATEWAYS":
+        return {
+                    "CGS": {
+                        "CLIENT": "magic_notifier.sms_clients.cgsms_client.CGSmsClient",
+                        "SUB_ACCOUNT": "sub_account",
+                        "SUB_ACCOUNT_PASSWORD": "sub_account_password"
+                    }
+                }
+    elif args[0] == "NOTIFIER_GET_USER_NUMBER":
+        return "magic_notifier.utils.get_user_number"
+
+
+def notifier_settings_for_twilio(*args, **kwargs):
+    if args[0] == "NOTIFIER_SMS_DEFAULT_GATEWAY":
+        return "TWILIO"
+    elif args[0] == "NOTIFIER_SMS_GATEWAYS":
+        return {
+                    "TWILIO": {
+                        "CLIENT": "magic_notifier.sms_clients.twilio_client.TwilioClient",
+                        "ACCOUNT": "sub_account",
+                        "TOKEN": "token",
+                        "FROM_NUMBER": "from_number"
+                    }
+                }
+    elif args[0] == "NOTIFIER_GET_USER_NUMBER":
+        return "magic_notifier.utils.get_user_number"
+
+
+class SmsTestCase(TestCase):
+
+    @patch('magic_notifier.smser.get_settings', side_effect=notifier_settings_for_global_cheap)
+    @patch('magic_notifier.sms_clients.cgsms_client.requests.get', side_effect=send_to_sms_outbox)
+    def test_global_cheap_sms_client(self, mock_get_request, mock_get_settings):
+        NOTIFIER = {
+            "SMS": {
+                "GATEWAYS": {
+                    "CGS": {
+                        "CLIENT": "magic_notifier.sms_clients.cgsms_client.CGSmsClient",
+                        "SUB_ACCOUNT": "sub_account",
+                        "SUB_ACCOUNT_PASSWORD": "sub_account_password"
+                    }
+                },
+                "DEFAULT_GATEWAY": "CGS"
+            }
+        }
+
+        with self.settings(NOTIFIER=NOTIFIER):
+            user = User.objects.create(email="testuser@localhost", username="testuser")
+            not_profile = NotifyProfile.objects.create(phone_number="+237600000000",
+                user=user)
+
+            subject = "Test magic notifier"
+            notify(["sms"], subject, [user], final_message="Nice if you get this")
+
+            self.assertGreater(len(sms_outbox), 0) # type: ignore
+            first_message = sms_outbox[0] # type: ignore
+            self.assertEqual(first_message.number, not_profile.phone_number)
+            self.assertEqual(first_message.message, "Nice if you get this")
+
+    @patch('magic_notifier.smser.get_settings', side_effect=notifier_settings_for_twilio)
+    @patch('twilio.http.http_client.TwilioHttpClient.request', side_effect=send_to_sms_outbox)
+    def test_twilio_sms_client(self, mock_get_request, mock_get_settings):
+        NOTIFIER = {
+            "SMS": {
+                "GATEWAYS": {
+                    "TWILIO": {
+                        "CLIENT": "magic_notifier.sms_clients.twilio_client.TwilioClient",
+                        "ACCOUNT": "sub_account",
+                        "TOKEN": "token",
+                        "FROM_NUMBER": "from_number"
+                    }
+                },
+                "DEFAULT_GATEWAY": "TWILIO"
+            }
+        }
+
+        with self.settings(NOTIFIER=NOTIFIER):
+            user = User.objects.create(email="testuser@localhost", username="testuser")
+            not_profile = NotifyProfile.objects.create(phone_number="+237600000000",
+                user=user)
+
+            subject = "Test magic notifier"
+            notify(["sms"], subject, [user], final_message="Nice if you get this")
+
+            self.assertGreater(len(sms_outbox), 0) # type: ignore
+            first_message = sms_outbox[0] # type: ignore
+            self.assertEqual(first_message.number, not_profile.phone_number)
+            self.assertEqual(first_message.message, "Nice if you get this")

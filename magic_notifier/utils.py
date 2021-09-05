@@ -1,10 +1,12 @@
 import importlib
 import logging
 import traceback
+from typing import Any, Optional
 
 from django.contrib.auth import get_user_model
 
-from magic_notifier.models import Notification
+from magic_notifier import settings
+from magic_notifier.models import Notification, NotifyProfile
 
 logger = logging.getLogger('notifier')
 
@@ -128,10 +130,22 @@ class NotificationBuilder:
         )
 
 
-def import_class(class_path:str):
+def import_attribute(class_path:str) -> Any:
     module_name, class_name = class_path.rsplit(".", 1)
     module = importlib.import_module(module_name)
     assert hasattr(module, class_name), "class {} is not in {}".format(class_name, module_name)
     logger.debug('reading class {} from module {}'.format(class_name, module_name))
-    cls = getattr(module, class_name)
-    return cls
+    attribute = getattr(module, class_name)
+    return attribute
+
+
+def get_user_number(user:User) -> Optional[str]:
+    not_profile:NotifyProfile = NotifyProfile.objects.filter(user=user).first()
+    if not_profile:
+        return not_profile.phone_number # type: ignore
+
+    return None
+
+
+def get_settings(name:str) -> Any:
+    return getattr(settings, name)

@@ -9,7 +9,7 @@ from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 
-from .utils import import_class
+from .utils import import_attribute
 
 logger = logging.getLogger("notifier")
 
@@ -28,7 +28,7 @@ class Emailer:
     ):
         from magic_notifier.settings import NOTIFIER_SMTP
         self.email_settings:dict = NOTIFIER_SMTP[smtp_account]
-        self.email_client = import_class(self.email_settings["CLIENT"])
+        self.email_client = import_attribute(self.email_settings["CLIENT"])
 
         self.connection = self.email_client.get_connection(self.email_settings)
         self.subject: str = subject
