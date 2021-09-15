@@ -1,5 +1,6 @@
 import logging
 import traceback
+from argparse import OPTIONAL
 from threading import Thread
 from typing import Optional
 
@@ -21,13 +22,13 @@ class Emailer:
         receivers: list,
         template: Optional[str],
         context: dict,
-        smtp_account: str='default',
+        email_gateway: str='default',
         final_message: str = None,
         files: list = None,
         **kwargs,
     ):
-        from magic_notifier.settings import NOTIFIER_SMTP
-        self.email_settings:dict = NOTIFIER_SMTP[smtp_account]
+        from magic_notifier.settings import NOTIFIER_EMAIL
+        self.email_settings:dict = NOTIFIER_EMAIL[email_gateway]
         self.email_client = import_attribute(self.email_settings["CLIENT"])
 
         self.connection = self.email_client.get_connection(self.email_settings)
@@ -37,7 +38,7 @@ class Emailer:
         self.context: dict = context if context else {}
         self.final_message = final_message
         self.threaded: bool = kwargs.get("threaded", False)
-        self.files: list = files
+        self.files: Optional[list] = files
 
     def send(self):
         if self.threaded:

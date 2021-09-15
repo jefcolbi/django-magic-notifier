@@ -22,7 +22,7 @@ def notify(
     template: str = None,
     context: dict = {},
     final_message: str = None,
-    smtp_account: str = 'default',
+    email_gateway: str = 'default',
     sms_gateway: Optional[str] = None,
     files: list = None,
     threaded: bool = None,
@@ -70,7 +70,7 @@ def notify(
                     list(receivers),
                     template,
                     context,
-                    smtp_account,
+                    email_gateway,
                     threaded=threaded,
                     final_message=final_message,
                     files=files

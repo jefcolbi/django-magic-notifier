@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
 
             user = User(email=user_email, username=user_email)
-            notify(["email"], subject=subject, smtp_account=account, receivers=[user], template=template,
+            notify(["email"], subject=subject, email_gateway=account, receivers=[user], template=template,
                    context={})
 
             print('Done!')
