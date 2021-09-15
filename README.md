@@ -4,8 +4,6 @@
 ![Python versions](https://img.shields.io/pypi/pyversions/django-magic-notifier) ![Django versions](https://img.shields.io/pypi/djversions/django-magic-notifier)  
 ![](https://img.shields.io/github/stars/jefcolbi/django-magic-notifier.svg) ![](https://img.shields.io/github/forks/jefcolbi/django-magic-notifier.svg) ![](https://img.shields.io/github/tag/jefcolbi/django-magic-notifier.svg) ![](https://img.shields.io/github/issues/jefcolbi/django-magic-notifier.svg)
 
-[TOC]
-
 ### Why Django Magic Notifier  
 Sending notifications in Django has always been a complex subject. Django Magic Notifier solves this by providing only one function **notify()**. The library [will] support sending notifications via email, sms and push notifications.  
 
@@ -113,10 +111,10 @@ Coming
 
 ### Roadmap
 
-- [X] Send sms
-- [] Send push notifications
-- [] Generate full documentation
-- [] Translate documentation
+- Send sms :tw-2705:
+- Send push notifications
+- Generate full documentation
+- Translate documentation
 
 
 ### Contributing
