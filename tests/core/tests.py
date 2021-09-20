@@ -268,9 +268,9 @@ def send_to_sms_outbox(*args, **kwargs):
 
 
 def notifier_settings_for_global_cheap(*args, **kwargs):
-    if args[0] == "NOTIFIER_SMS_DEFAULT_GATEWAY":
+    if args[0] == "SMS::DEFAULT_GATEWAY":
         return "CGS"
-    elif args[0] == "NOTIFIER_SMS_GATEWAYS":
+    elif args[0] == "SMS":
         return {
                     "CGS": {
                         "CLIENT": "magic_notifier.sms_clients.cgsms_client.CGSmsClient",
@@ -278,14 +278,14 @@ def notifier_settings_for_global_cheap(*args, **kwargs):
                         "SUB_ACCOUNT_PASSWORD": "sub_account_password"
                     }
                 }
-    elif args[0] == "NOTIFIER_GET_USER_NUMBER":
+    elif args[0] == "GET_USER_NUMBER":
         return "magic_notifier.utils.get_user_number"
 
 
 def notifier_settings_for_twilio(*args, **kwargs):
-    if args[0] == "NOTIFIER_SMS_DEFAULT_GATEWAY":
+    if args[0] == "SMS::DEFAULT_GATEWAY":
         return "TWILIO"
-    elif args[0] == "NOTIFIER_SMS_GATEWAYS":
+    elif args[0] == "SMS":
         return {
                     "TWILIO": {
                         "CLIENT": "magic_notifier.sms_clients.twilio_client.TwilioClient",
@@ -294,7 +294,7 @@ def notifier_settings_for_twilio(*args, **kwargs):
                         "FROM_NUMBER": "from_number"
                     }
                 }
-    elif args[0] == "NOTIFIER_GET_USER_NUMBER":
+    elif args[0] == "GET_USER_NUMBER":
         return "magic_notifier.utils.get_user_number"
 
 

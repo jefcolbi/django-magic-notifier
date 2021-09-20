@@ -3,9 +3,9 @@ import logging
 import traceback
 from typing import Any, Optional
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from magic_notifier import settings
 from magic_notifier.models import Notification, NotifyProfile
 
 logger = logging.getLogger('notifier')
@@ -148,4 +148,7 @@ def get_user_number(user:User) -> Optional[str]:
 
 
 def get_settings(name:str) -> Any:
-    return getattr(settings, name)
+    res = settings.NOTIFIER
+    for key in name.split('::'):
+        res = res[key]
+    return res

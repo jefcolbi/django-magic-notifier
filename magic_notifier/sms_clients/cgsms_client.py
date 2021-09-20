@@ -11,7 +11,7 @@ logger = logging.getLogger("notifier")
 class CGSmsClient(BaseSmsClient):
 
     @classmethod
-    def send(cls, number: str, text: str):
+    def send(cls, number: str, text: str, **kwargs):
         sub_account = settings.NOTIFIER["SMS"]["GATEWAYS"]["CGS"]["SUB_ACCOUNT"]
         sub_account_pass = settings.NOTIFIER["SMS"]["GATEWAYS"]["CGS"]["SUB_ACCOUNT_PASSWORD"]
         params = {

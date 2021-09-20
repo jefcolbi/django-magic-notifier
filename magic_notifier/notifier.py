@@ -20,27 +20,30 @@ def notify(
     subject: str = None,
     receivers: Union[str, list, models.QuerySet, models.Manager] = None,
     template: str = None,
-    context: dict = {},
+    context: dict = None,
     final_message: str = None,
     email_gateway: str = 'default',
     sms_gateway: Optional[str] = None,
     files: list = None,
     threaded: bool = None,
 ):
-    """Send a notification
+    """This function send a notification via the method specified in parameter vias
 
-    :param vias: list of sendin method. can be email|sms|push
-    :param subject: the subject of the notification
-    :param receivers: the receivers list. can be a list of user instances or a string representing users like admins|staff|all|all-staff|all-admins
-    :param template: the email template. ignored if final message is passed
-    :param context: the context
-    :param final_message: the direct content of the notification
-    :param smtp_account: the smtp account to use
-    :param threaded: if the notification must be send via a worker thread
+    :param vias: accepted values are email,sms,push
+    :param subject: the subject of the notification, ignored when send by sms
+    :param receivers: it can be a list, queryset or manager of users. if a string is passed it must be *admins* to send to (super) admins, *staff* to send to staff only, *all* to all users, *all-staff* to all users minus staff and *all-admins* to all users excepted admins
+    :param template: the name of the template to user. Default None
+    :param context: the context to be passed to template. Note that the context is auto-filled with the current the notification is going under the key 'user'. Default None
+    :param final_message: the final message to be sent as the notification content, must be sent if template is None, template is ignored if it is sent. Default None
+    :param email_gateway: the email gateway to use. Default 'default'
+    :param sms_gateway: the sms gateway to use. Default to None
+    :param files: list of files to be sent. accept file-like objects, tuple, file path. Default None
+    :param threaded: if True, the notification is sent in background else sent with the current thread. Default to NOTIFIER["THREADED"] settings
     :return:
     """
     logger.debug(f"Sending {subject} to {receivers} via {vias}")
     threaded = threaded if threaded is not None else NOTIFIER_THREADED
+    context = {} if context is None else context
 
     assert subject, "subject not defined"
 

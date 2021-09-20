@@ -10,6 +10,8 @@ from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 
+from magic_notifier.utils import get_settings
+
 from .utils import import_attribute
 
 logger = logging.getLogger("notifier")
@@ -27,7 +29,21 @@ class Emailer:
         files: list = None,
         **kwargs,
     ):
-        from magic_notifier.settings import NOTIFIER_EMAIL
+        """The class is reponsible of email sending.
+
+        :param subject: the subject of the notification, ignored when send by sms
+        :param receivers: list of User
+        :param template: the name of the template to user. Default None
+        :param context: the context to be passed to template. Default None
+        :param email_gateway: the email gateway to use. Default 'default'
+        :param final_message: the final message to be sent as the notification content, must be sent if template is None, template is ignored if it is sent. Default None
+        :param files: list of files to be sent. accept file-like objects, tuple, file path. Default None
+        :param kwargs:
+        """
+        try:
+            NOTIFIER_EMAIL = get_settings('EMAIL')
+        except (AttributeError, KeyError):
+            from magic_notifier.settings import NOTIFIER_EMAIL
         self.email_settings:dict = NOTIFIER_EMAIL[email_gateway]
         self.email_client = import_attribute(self.email_settings["CLIENT"])
 

@@ -3,7 +3,7 @@ from django.conf import settings
 AVAILABLE_MODES = [("user", "User"), ("admin", "Admin")]
 NOTIFIER_SETTINGS = getattr(settings, "NOTIFIER", {})
 
-SMTP_ACTIVE = NOTIFIER_SETTINGS.get('SMTP_ACTIVE', True)
+EMAIL_ACTIVE = NOTIFIER_SETTINGS.get('EMAIL_ACTIVE', True)
 SMS_ACTIVE = NOTIFIER_SETTINGS.get('SMS_ACTIVE', False)
 PUSH_ACTIVE = NOTIFIER_SETTINGS.get('PUSH_ACTIVE', False)
 
@@ -16,9 +16,9 @@ NOTIFIER_EMAIL = NOTIFIER_SETTINGS.get('EMAIL', {})
 NOTIFIER_EMAIL_DEFAULT_GATEWAY = NOTIFIER_EMAIL.get('DEFAULT_GATEWAY', 'default')
 
 if NOTIFIER_EMAIL_DEFAULT_GATEWAY == "default":
-    if  "default" not in NOTIFIER_EMAIL:
+    if "default" not in NOTIFIER_EMAIL:
         # we build the default dict from django standard smtp settings
-        assert settings.EMAIL_HOST, "You have not defined any DEFAULT SMTP settings and no django smtp settings detected."
+        assert settings.EMAIL_HOST, "You have not defined any DEFAULT EMAIL settings and no django email settings detected."
         NOTIFIER_EMAIL["default"] = {
             "HOST": settings.EMAIL_HOST,
             "PORT": settings.EMAIL_PORT,
@@ -30,9 +30,3 @@ if NOTIFIER_EMAIL_DEFAULT_GATEWAY == "default":
             "CLIENT": "magic_notifier.email_clients.django_email.DjangoEmailClient"
         }
 
-
-NOTIFIER_SMS = NOTIFIER_SETTINGS.get('SMS', {})
-NOTIFIER_SMS_DEFAULT_GATEWAY = NOTIFIER_SMS.get('DEFAULT_GATEWAY', 'default')
-NOTIFIER_SMS_GATEWAYS = NOTIFIER_SMS.get('GATEWAYS', {})
-
-NOTIFIER_GET_USER_NUMBER = NOTIFIER_SETTINGS.get("GET_USER_NUMBER", "magic_notifier.utils.get_user_number")
