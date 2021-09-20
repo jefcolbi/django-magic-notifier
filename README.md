@@ -7,6 +7,9 @@
 ### Why Django Magic Notifier  
 Sending notifications in Django has always been a complex subject. Django Magic Notifier solves this by providing only one function **notify()**. The library [will] support sending notifications via email, sms and push notifications.  
 
+### Documentation
+[Full documentation](https://django-magic-notifier.readthedocs.io/en/stable/)
+
 ### Features
 
 - Send emails
