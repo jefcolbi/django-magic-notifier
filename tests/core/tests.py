@@ -272,10 +272,12 @@ def notifier_settings_for_global_cheap(*args, **kwargs):
         return "CGS"
     elif args[0] == "SMS":
         return {
-                    "CGS": {
-                        "CLIENT": "magic_notifier.sms_clients.cgsms_client.CGSmsClient",
-                        "SUB_ACCOUNT": "sub_account",
-                        "SUB_ACCOUNT_PASSWORD": "sub_account_password"
+                    "GATEWAYS": {
+                        "CGS": {
+                            "CLIENT": "magic_notifier.sms_clients.cgsms_client.CGSmsClient",
+                            "SUB_ACCOUNT": "sub_account",
+                            "SUB_ACCOUNT_PASSWORD": "sub_account_password"
+                        }
                     }
                 }
     elif args[0] == "GET_USER_NUMBER":
@@ -287,11 +289,13 @@ def notifier_settings_for_twilio(*args, **kwargs):
         return "TWILIO"
     elif args[0] == "SMS":
         return {
-                    "TWILIO": {
-                        "CLIENT": "magic_notifier.sms_clients.twilio_client.TwilioClient",
-                        "ACCOUNT": "sub_account",
-                        "TOKEN": "token",
-                        "FROM_NUMBER": "from_number"
+                    "GATEWAYS": {
+                        "TWILIO": {
+                            "CLIENT": "magic_notifier.sms_clients.twilio_client.TwilioClient",
+                            "ACCOUNT": "sub_account",
+                            "TOKEN": "token",
+                            "FROM_NUMBER": "from_number"
+                        }
                     }
                 }
     elif args[0] == "GET_USER_NUMBER":
@@ -304,7 +308,7 @@ class SmsTestCase(TestCase):
     @patch('magic_notifier.sms_clients.cgsms_client.requests.get', side_effect=send_to_sms_outbox)
     def test_global_cheap_sms_client(self, mock_get_request, mock_get_settings):
         NOTIFIER = {
-            "SMS": {
+            "SMS":{
                 "GATEWAYS": {
                     "CGS": {
                         "CLIENT": "magic_notifier.sms_clients.cgsms_client.CGSmsClient",

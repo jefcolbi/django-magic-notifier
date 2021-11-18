@@ -33,7 +33,7 @@ class ExternalSMS:
         # get the default sms gateway
         self.sms_gateway = get_settings('SMS::DEFAULT_GATEWAY') if sms_gateway is None else sms_gateway
         # get the sms gateway definition
-        NOTIFIER_SMS_GATEWAY = get_settings('SMS')[self.sms_gateway]
+        NOTIFIER_SMS_GATEWAY = get_settings('SMS')["GATEWAYS"][self.sms_gateway]
         # get the sms client to be used
         NOTIFIER_SMS_CLIENT = NOTIFIER_SMS_GATEWAY['CLIENT']
         # load the sms client
@@ -65,7 +65,7 @@ class ExternalSMS:
                 if self.final_message:
                     sms_content = self.final_message
                 else:
-                    sms_content = render_to_string("{}/sms.txt".format(self.template), ctx)
+                    sms_content = render_to_string("notifier/{}/sms.txt".format(self.template), ctx)
 
                 self.client_class.send(number, sms_content, **self.sms_class_options)
         except:
