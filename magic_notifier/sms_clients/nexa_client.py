@@ -22,5 +22,10 @@ class NexaSmsClient(BaseSmsClient):
             "sms": text,
             "mobiles": number.replace('+', ''),
         }
-        res = requests.get("https://smsvas.com/bulk/public/index.php/api/v1/sendsms", params=params)
+        logger.info(f"Sending sms with data {params}")
+        res = requests.post("https://smsvas.com/bulk/public/index.php/api/v1/sendsms", json=params)
+        if(res.status_code != 200):
+            logger.error(f"Failed to send the sms: {res.content}")
+        else:
+            logger.info(res.content)
         return res

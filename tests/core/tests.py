@@ -4,6 +4,7 @@ from pathlib import Path
 from unittest import mock
 from unittest.mock import patch
 
+import requests
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.management import call_command
@@ -232,39 +233,52 @@ class Sms:
         self.message = message
 
 def send_to_sms_outbox(*args, **kwargs):
+    print(*args)
+    try:
+        url = args[-1]
+    except:
+        url = None
     params = kwargs.get('params')
     data = kwargs.get('data')
-    if params:
-        sms_outbox.append(Sms(params['recipients'], params['message']))
-    else:
-        sms_outbox.append(Sms(data['To'], data['Body']))
-        from twilio.http.response import Response
+    if url:
+        if url == 'https://smsvas.com/bulk/public/index.php/api/v1/sendsms':
+            data = kwargs['json']
+            sms_outbox.append(Sms(data['mobiles'], data['sms']))
+            res = requests.Response()
+            res.status_code = 200
+            return res
+        elif url == 'http://cheapglobalsms.com/api_v1':
+            params = kwargs['params']
+            sms_outbox.append(Sms(params['recipients'], params['message']))
+        else:
+            sms_outbox.append(Sms(data['To'], data['Body']))
+            from twilio.http.response import Response
 
-        return mock.MagicMock(spec=Response, status_code=200,
-            text=json.dumps({
-                      "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-                      "api_version": "2010-04-01",
-                      "body": "Hi there",
-                      "date_created": "Thu, 30 Jul 2015 20:12:31 +0000",
-                      "date_sent": "Thu, 30 Jul 2015 20:12:33 +0000",
-                      "date_updated": "Thu, 30 Jul 2015 20:12:33 +0000",
-                      "direction": "outbound-api",
-                      "error_code": None,
-                      "error_message": None,
-                      "from": "+15017122661",
-                      "messaging_service_sid": "MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-                      "num_media": "0",
-                      "num_segments": "1",
-                      "price": None,
-                      "price_unit": None,
-                      "sid": "SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-                      "status": "sent",
-                      "subresource_uris": {
-                        "media": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Media.json"
-                      },
-                      "to": "+15558675310",
-                      "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json"
-                    }))
+            return mock.MagicMock(spec=Response, status_code=200,
+                text=json.dumps({
+                          "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                          "api_version": "2010-04-01",
+                          "body": "Hi there",
+                          "date_created": "Thu, 30 Jul 2015 20:12:31 +0000",
+                          "date_sent": "Thu, 30 Jul 2015 20:12:33 +0000",
+                          "date_updated": "Thu, 30 Jul 2015 20:12:33 +0000",
+                          "direction": "outbound-api",
+                          "error_code": None,
+                          "error_message": None,
+                          "from": "+15017122661",
+                          "messaging_service_sid": "MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                          "num_media": "0",
+                          "num_segments": "1",
+                          "price": None,
+                          "price_unit": None,
+                          "sid": "SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                          "status": "sent",
+                          "subresource_uris": {
+                            "media": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Media.json"
+                          },
+                          "to": "+15558675310",
+                          "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json"
+                        }))
 
 
 def notifier_settings_for_global_cheap(*args, **kwargs):
@@ -277,6 +291,24 @@ def notifier_settings_for_global_cheap(*args, **kwargs):
                             "CLIENT": "magic_notifier.sms_clients.cgsms_client.CGSmsClient",
                             "SUB_ACCOUNT": "sub_account",
                             "SUB_ACCOUNT_PASSWORD": "sub_account_password"
+                        }
+                    }
+                }
+    elif args[0] == "GET_USER_NUMBER":
+        return "magic_notifier.utils.get_user_number"
+
+
+def notifier_settings_for_nexa(*args, **kwargs):
+    if args[0] == "SMS::DEFAULT_GATEWAY":
+        return "NEXA"
+    elif args[0] == "SMS":
+        return {
+                    "GATEWAYS": {
+                        "NEXA": {
+                            "CLIENT": "magic_notifier.sms_clients.nexa_client.NexaSmsClient",
+                            "EMAIL": "sub_account",
+                            "PASSWORD": "sub_account_password",
+                            "SENDERID": "senderid"
                         }
                     }
                 }
@@ -360,5 +392,35 @@ class SmsTestCase(TestCase):
 
             self.assertGreater(len(sms_outbox), 0) # type: ignore
             first_message = sms_outbox[0] # type: ignore
+            self.assertEqual(first_message.number, not_profile.phone_number)
+            self.assertEqual(first_message.message, "Nice if you get this")
+
+    @patch('magic_notifier.smser.get_settings', side_effect=notifier_settings_for_nexa)
+    @patch('magic_notifier.sms_clients.cgsms_client.requests.post', side_effect=send_to_sms_outbox)
+    def test_nexa_sms_client(self, mock_get_request, mock_get_settings):
+        NOTIFIER = {
+            "SMS": {
+                "GATEWAYS": {
+                    "NEXA": {
+                        "CLIENT": "magic_notifier.sms_clients.nexa_client.NexaSmsClient",
+                        "EMAIL": "sub_account",
+                        "PASSWORD": "sub_account_password",
+                        "SENDERID": "senderid"
+                    }
+                },
+                "DEFAULT_GATEWAY": "NEXA"
+            }
+        }
+
+        with self.settings(NOTIFIER=NOTIFIER):
+            user = User.objects.create(email="testuser@localhost", username="testuser")
+            not_profile = NotifyProfile.objects.create(phone_number="+237600000000",
+                                                       user=user)
+
+            subject = "Test magic notifier"
+            notify(["sms"], subject, [user], final_message="Nice if you get this")
+
+            self.assertGreater(len(sms_outbox), 0)  # type: ignore
+            first_message = sms_outbox[0]  # type: ignore
             self.assertEqual(first_message.number, not_profile.phone_number)
             self.assertEqual(first_message.message, "Nice if you get this")
