@@ -71,7 +71,7 @@ class Notification(models.Model):
     user: models.ForeignKey = models.ForeignKey(
         User, models.CASCADE, null=True, blank=True, related_name="magic_notifications"
     )
-    subject: models.CharField = models.CharField(max_length=255)
+    subject: models.CharField = models.CharField(max_length=255, null=True, blank=True)
     text: models.TextField = models.TextField()
     type: models.CharField = models.CharField(max_length=30)
     sub_type: models.CharField = models.CharField(max_length=30, null=True, blank=True)
