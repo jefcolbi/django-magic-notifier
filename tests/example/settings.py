@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'magic_notifier',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -134,4 +137,48 @@ NOTIFIER = {
             "CLIENT": "magic_notifier.email_clients.django_email.DjangoEmailClient",
         }
     },
+    "USER_FROM_WS_TOKEN_FUNCTION": 'magic_notifier.utils.get_user_from_ws_token'
+}
+
+ASGI_APPLICATION = 'example.asgi.application'
+
+LOGS_FORMAT = (
+    "[%(asctime)s] %(levelname)s[%(name)s] %(message)s - %(pathname)s#lines-%(lineno)s"
+)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": LOGS_FORMAT,
+            "datefmt": "%d/%b/%Y %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "default": {
+            "level": "DEBUG" if DEBUG else "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "standard",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["default"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+        "": {
+            "handlers": ["default"],  # Logstash disabled
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        #"django.request": {"handlers": ["default"], "level": "DEBUG"},
+    },
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
 }

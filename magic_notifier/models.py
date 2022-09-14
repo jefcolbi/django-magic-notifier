@@ -71,11 +71,12 @@ class Notification(models.Model):
     user: models.ForeignKey = models.ForeignKey(
         User, models.CASCADE, null=True, blank=True, related_name="magic_notifications"
     )
+    subject: models.CharField = models.CharField(max_length=255)
     text: models.TextField = models.TextField()
     type: models.CharField = models.CharField(max_length=30)
     sub_type: models.CharField = models.CharField(max_length=30, null=True, blank=True)
     link: models.CharField = models.CharField(_("The link associated"), max_length=255)
-    image: models.ImageField = models.ImageField(upload_to="notifications")
+    image: models.ImageField = models.ImageField(upload_to="notifications", null=True, blank=True)
     actions: JSONField = JSONField(default=dict)
     data: JSONField = JSONField(default=dict)
     read: models.DateTimeField = models.DateTimeField(null=True, blank=True)
@@ -85,8 +86,8 @@ class Notification(models.Model):
     )
 
     def __str__(self):
-        if self.user and self.user.name:
-            user_name = self.user.name
+        if self.user and self.user.username:
+            user_name = self.user.username
         else:
             user_name = ""
         return "{} Notif #{}".format(user_name, self.id)

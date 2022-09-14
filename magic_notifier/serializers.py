@@ -7,6 +7,8 @@ class NotificationSerializer(ModelSerializer):
     class Meta:
         model = Notification
         fields = (
+            'id',
+            'subject',
             "text",
             "type",
             "sub_type",

@@ -14,8 +14,9 @@ User = get_user_model()
 
 
 class NotificationBuilder:
-    def __init__(self, text):
-        self.__text = text
+    def __init__(self, subject):
+        self.__text = None
+        self.__subject = subject
         self.__user = None
         self.__type = None
         self.__sub_type = None
@@ -33,6 +34,16 @@ class NotificationBuilder:
             raise ValueError("text should be a string")
 
         self.__text = text
+        return self
+
+    def subject(self, subject=None):
+        if subject is None:
+            return self.__subject
+
+        if not isinstance(subject, str):
+            raise ValueError("text should be a string")
+
+        self.__subject = subject
         return self
 
     def link(self, link=None):
@@ -110,7 +121,8 @@ class NotificationBuilder:
         return self
 
     def save(self):
-        notif = Notification.objects.create(
+        return Notification.objects.create(
+            subject=self.__subject,
             text=self.__text,
             link=self.__link,
             user=self.__user,
@@ -120,7 +132,6 @@ class NotificationBuilder:
             type=self.__type,
             sub_type=self.__sub_type,
         )
-        return notif
 
     def show(self):
         return (
@@ -152,3 +163,8 @@ def get_settings(name:str) -> Any:
     for key in name.split('::'):
         res = res[key]
     return res
+
+
+def get_user_from_ws_token(token: str) -> User:
+    from rest_framework.authtoken.models import Token
+    return Token.objects.get(key=token).user

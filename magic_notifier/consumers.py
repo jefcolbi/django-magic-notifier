@@ -6,13 +6,13 @@ import traceback
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
+from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
 from channels.generic.websocket import WebsocketConsumer
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
-from notif.models import Notification
-from notif.models_serializers import NotificationSerializer
-from rest_framework.authtoken.models import Token
+from .models import Notification
+from .serializers import NotificationSerializer
 
 logger = logging.getLogger("notif")
 
@@ -24,25 +24,27 @@ class PushNotifConsumer(WebsocketConsumer):
         self.user = None
 
     def connect(self):
+        from .utils import get_settings, import_attribute
+
         try:
+            logger.info(f"accepting")
             self.accept()
 
             self.token = self.scope["url_route"]["kwargs"]["token"]
-            db_tok = Token.objects.get(key=self.token)
-            self.user = db_tok.user
+            get_user_from_ws_token_func = import_attribute(get_settings("USER_FROM_WS_TOKEN_FUNCTION"))
+            self.user = get_user_from_ws_token_func(self.token)
 
-            self.user.settings.push_channel = self.channel_name
-            self.user.settings.save()
+
+            async_to_sync(self.channel_layer.group_add)(f"user-{self.user.id}", self.channel_name)
 
             logger.info("Accepted")
         except Exception as e:
             print(traceback.print_exc())
-            logging.error(traceback.format_exc())
+            logger.error(traceback.format_exc())
 
     def disconnect(self, close_code):
         try:
-            self.user.settings.push_channel = None
-            self.user.settings.save()
+            async_to_sync(self.channel_layer.group_discard)(f"user-{self.user.id}", self.channel_name)
         except Exception as e:
             print(traceback.format_exc())
             logging.error(traceback.format_exc())
@@ -69,6 +71,9 @@ class PushNotifConsumer(WebsocketConsumer):
 
     def markread(self, event: dict):
         notifs = Notification.objects.filter(user=self.user, read__isnull=True)
+        notification_id = event.get('notification')
+        if notification_id:
+            notifs = notifs.filter(pk=notification_id)
         notifs.update(read=timezone.now())
         event["success"] = True
         self.send(json.dumps(event))
