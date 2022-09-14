@@ -8,11 +8,14 @@ import requests
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.management import call_command
-from django.test import TestCase, override_settings
+from django.template.loader import render_to_string
+from django.test import TestCase, override_settings, LiveServerTestCase
 
-from magic_notifier.models import NotifyProfile
+from magic_notifier.models import NotifyProfile, Notification
 from magic_notifier.notifier import notify
-
+from magic_notifier.pusher import Pusher
+from magic_notifier.utils import NotificationBuilder
+from magic_notifier.serializers import NotificationSerializer
 User = get_user_model()
 
 
@@ -424,3 +427,53 @@ class SmsTestCase(TestCase):
             first_message = sms_outbox[0]  # type: ignore
             self.assertEqual(first_message.number, not_profile.phone_number)
             self.assertEqual(first_message.message, "Nice if you get this")
+
+
+class PushNotificationTestCase(TestCase):
+
+    def test_load_json(self):
+        ctx = {
+            'text': 'yes',
+            'actions': [
+                {
+                    'text': 'wow',
+                    'url': 'accept',
+                    'method': 'post'
+                },
+                {
+                    'text': 'meow',
+                    'url': 'deny',
+                    'method': 'get'
+                }
+            ],
+            'data': {
+                'love': 'you',
+                'hate': 'no-one'
+            }
+        }
+        push_content = render_to_string(f"notifier/base/push.json", ctx)
+        print(push_content)
+        self.assertIsInstance(json.loads(push_content), dict)
+
+    def test_notification_builder_class(self):
+        notif = NotificationBuilder("just a test").text("This is just a test").type('test', 'test_sub')\
+            .link("http://lol").save()
+        self.assertIsInstance(notif, Notification)
+        seria = NotificationSerializer(instance=notif)
+        print(notif)
+        print(seria.data)
+
+
+class LivePushNotificationTestCase(LiveServerTestCase):
+    port = 8001
+
+    def test_pusher_class(self):
+        user = User.objects.create_user('testuser')
+        NotifyProfile.objects.create(user=user)
+        pusher = Pusher("just a test", [user], 'base', {'data': {'love': 'you', 'hate': 'no-one'},
+                                                        'actions': [{'text':'accept', 'method':'post', 'url': 'http://'}]})
+        notif = pusher.send()
+        self.assertIsInstance(notif, Notification)
+        seria = NotificationSerializer(instance=notif)
+        print(notif)
+        print(seria.data)

@@ -25,6 +25,8 @@ class Pusher:
         self.receivers: list = receivers
         self.template: str = template
         self.context: dict = context
+        if 'subject' not in context and subject:
+            self.context['subject'] = subject
         self.threaded: bool = kwargs.get("threaded", False)
         self.image = kwargs.get("image")
 
@@ -34,26 +36,22 @@ class Pusher:
             t.setDaemon(True)
             t.start()
         else:
-            self._send()
+            return self._send()
 
     def _send(self):
         try:
             for user in self.receivers:
+                logger.debug(f"sending push notification to {user}")
                 ctx = self.context.copy()
                 ctx["user"] = user
-                data_str = json.dumps(ctx.get("data", {}), indent=4)
-                ctx["data"] = data_str
-                push_content = render_to_string(
-                    "{}/push.json".format(self.template), ctx
-                )
-
-                print(push_content)
+                push_content = render_to_string(f"notifier/{self.template}/push.json", ctx)
 
                 event: dict = json.loads(push_content)
-                print(event)
+                event['type'] = 'notification'
 
                 not_builder = (
-                    NotificationBuilder(event["text"])
+                    NotificationBuilder(event["subject"])
+                    .text(event['text'])
                     .type(event["type"], event["sub_type"])
                     .link(event["link"])
                     .mode(event["mode"])
@@ -65,15 +63,17 @@ class Pusher:
                 if self.image:
                     not_builder.image(self.image)
 
-                not_builder.save()
+                res = not_builder.save()
+                event['id'] = res.id
 
                 # return
-
-                push_channel = user.settings.push_channel
-                print(f"user is waitin to channel {push_channel}")
-
                 channel_layer = get_channel_layer()
-                async_to_sync(channel_layer.send)(push_channel, event)
+                async_to_sync(channel_layer.group_send)(
+                    f"user-{user.id}",
+                    event
+                )
+
+                return res
         except:
             logger.error(traceback.format_exc())
 

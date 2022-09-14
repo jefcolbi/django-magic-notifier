@@ -43,6 +43,7 @@ NOTIFIER = {
             "CLIENT": "magic_notifier.email_clients.django_email.DjangoEmailClient",
         }
     },
+    "USER_FROM_WS_TOKEN_FUNCTION": 'magic_notifier.utils.get_user_from_ws_token'
 }
 ```
 
@@ -114,8 +115,6 @@ Coming
 
 ### Roadmap
 
-- Send sms :tw-2705:
-- Send push notifications
 - Generate full documentation
 - Translate documentation
 

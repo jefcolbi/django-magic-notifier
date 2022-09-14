@@ -1,21 +1,24 @@
 {
-    "text": "{{ text }}",
-    "type": "{{ type|default:'default' }}",
-    "sub_type": "{{ sub_type }}",
-    "link": "{{ link|default:'http://blank' }}",
-    "image": "{{ image }}",
-    "actions": [
+    "subject": "{% block subject %}{{ subjet }}{% endblock %}",
+    "text": "{% block text %}{{ text }}{% endblock %}",
+    "type": "{% block type %}{{ type|default:'default' }}{% endblock %}",
+    "sub_type": "{% block sub_type %}{{ sub_type }}{% endblock %}",
+    "link": "{% block link %}{{ link|default:'http://blank' }}{% endblock %}",
+    "image": "{% block image %}{{ image }}{% endblock %}",
+    "icon": "{% block icon %}{{ icon }}{% endblock %}",
+    "mode": "{% block mode %}{{ mode }}{% endblock %}",
+    "actions": [{% block actions %}
         {% for action in actions %}
-        """
         {"text": "{{ action.text}}",
         "method": "{{ action.method }}",
-        "url": "{{ action.url }}"}
-        """
+        "url": "{{ action.url }}",
+        "icon": "{{ action.icon|default_if_none:'' }}"
+        }{% if not forloop.last %},{% endif %}
         {% endfor %}
-    ],
-    "data": {
+    {% endblock %}],
+    "data": {{% block data %}
         {% for key, value in data.items %}
-        "{{ key }}": "{{ value }}"{% if not forlopp.last %},{% endif %}
+        "{{ key }}": "{{ value }}"{% if not forloop.last %},{% endif %}
         {% endfor %}
-    }
+    {% endblock %}}
 }
