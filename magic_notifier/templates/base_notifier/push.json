@@ -1,5 +1,5 @@
 {
-    "subject": "{% block subject %}{{ subjet }}{% endblock %}",
+    "subject": "{% block subject %}{{ subject }}{% endblock %}",
     "text": "{% block text %}{{ text }}{% endblock %}",
     "type": "{% block type %}{{ type|default:'default' }}{% endblock %}",
     "sub_type": "{% block sub_type %}{{ sub_type }}{% endblock %}",
