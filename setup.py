@@ -18,13 +18,14 @@ URL = 'https://github.com/jefcolbi/django-magic-notifier'
 EMAIL = 'jefcolbi@gmail.com'
 AUTHOR = 'jefcolbi'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
     'django>=2.2',
     'djangorestframework',
-    'requests'
+    'requests',
+    'mjml-python'
 ]
 
 # What packages are optional?

@@ -9,6 +9,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
+from mjml import mjml2html
 
 from magic_notifier.utils import get_settings
 
@@ -78,16 +79,31 @@ class Emailer:
 
                 if self.template:
                     try:
-                        html_content = render_to_string(
-                            f"notifier/{self.template}/email.html", ctx
-                        )  # render with dynamic value
+                        mjml_content = render_to_string(
+                            f"notifier/{self.template}/email.mjml", ctx
+                        )
+                        logger.debug("mjml_content")
+                        logger.debug(mjml_content)
+                        html_content = mjml2html(mjml_content)
+                        logger.debug("html_content")
                         logger.debug(html_content)
-                    except TemplateDoesNotExist:
+                    except Exception as e:
                         html_content = None
+
+                    if not html_content:
+                        try:
+                            html_content = render_to_string(
+                                f"notifier/{self.template}/email.html", ctx
+                            )  # render with dynamic value
+                            logger.debug("html_content")
+                            logger.debug(html_content)
+                        except TemplateDoesNotExist:
+                            html_content = None
 
                     text_content = render_to_string(
                     f"notifier/{self.template}/email.txt", ctx
                     )  # render with dynamic value
+                    logger.debug("text_content")
                     logger.debug(text_content)
                 else:
                     html_content = text_content = self.final_message
