@@ -87,7 +87,7 @@ class Emailer:
                         html_content = mjml2html(mjml_content)
                         logger.debug("html_content")
                         logger.debug(html_content)
-                    except Exception as e:
+                    except TemplateDoesNotExist as e:
                         html_content = None
 
                     if not html_content:
@@ -133,5 +133,5 @@ class Emailer:
                         else:
                             logger.warning(f"discarding possible file {pos_file}")
                 msg.send()
-        except:
+        except Exception as e:
             logger.error(traceback.format_exc())
