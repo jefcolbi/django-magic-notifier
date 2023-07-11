@@ -16,8 +16,6 @@ Welcome to Django Magic Notifier's documentation!
    usage
    autoapi/index
 
-
-
 Indices and tables
 ==================
 

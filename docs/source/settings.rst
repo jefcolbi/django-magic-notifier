@@ -137,3 +137,7 @@ DMN needs a way to get a phone number from a User object. GET USER NUMBER must b
 one parameter of type User. Default **`'magic_notifer.utils.get_user_number'`**::
 
     'GET_USER_NUMBER': 'path.to.function'
+
+NOTIFIER PUSH SETTINGS
+======================
+
