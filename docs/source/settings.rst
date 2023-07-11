@@ -141,3 +141,15 @@ one parameter of type User. Default **`'magic_notifer.utils.get_user_number'`**:
 NOTIFIER PUSH SETTINGS
 ======================
 
+To connect to push notification websocket, a client must have a token.
+You need to specify a path to a function that returns a token given a
+User instance. The signature of the function must be::
+
+    def get_token_from_user(user) -> str:
+
+
+Setting example::
+
+    NOTIFIER = {
+        "USER_FROM_WS_TOKEN_FUNCTION": 'magic_notifier.utils.get_user_from_ws_token'
+    }

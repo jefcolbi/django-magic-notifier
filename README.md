@@ -104,7 +104,7 @@ To send a notification via email do
 ```
 
 ### Docs and support
-Coming
+https://django-magic-notifier.readthedocs.io/en/latest/index.html
 
 
 ### Roadmap
