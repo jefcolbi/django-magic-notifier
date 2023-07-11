@@ -9,7 +9,7 @@ Send an email with a direct final string (no template) to a user instance::
     notify(["email"], subject, [user], final_message="Nice if you get this")
 
 
-Send an email with a template to a user instance::
+Send an email with a template (hello) to a user instance::
 
     user = User(email="testuser@localhost", username="testuser")
     subject = "Test magic notifier"
@@ -71,3 +71,9 @@ Send an email and sms with a template to all users excluding staff::
     user = User(email="testuser@localhost", username="testuser")
     subject = "Test magic notifier"
     notify(["email", 'sms'], subject, "all-staff", template='hello')
+
+Send an email, a sms and a push notification with a template to all users excluding staff::
+
+    user = User(email="testuser@localhost", username="testuser")
+    subject = "Test magic notifier"
+    notify(["email", 'sms', 'push'], subject, "all-staff", template='hello')

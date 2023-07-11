@@ -7,7 +7,7 @@ from django.template.loader import render_to_string
 try:
     from asgiref.sync import async_to_sync
     from channels.layers import get_channel_layer
-except:
+except Exception:
     pass
 import json
 
@@ -22,6 +22,14 @@ class Pusher:
     def __init__(
         self, subject, receivers: list, template: str, context: dict, **kwargs
     ):
+        """
+
+        :param subject:The subject of the notification
+        :param receivers: The user list of receivers
+        :param template: The template to use
+        :param context:The context to pass to the template
+        :param kwargs:
+        """
         self.receivers: list = receivers
         self.template: str = template
         self.context: dict = context
@@ -74,7 +82,7 @@ class Pusher:
                 )
 
                 return res
-        except:
+        except Exception as e:
             logger.error(traceback.format_exc())
 
 

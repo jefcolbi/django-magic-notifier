@@ -20,10 +20,11 @@ Sending notifications in Django has always been a complex subject. Django Magic 
 - Support files
 - Support multiple gateways
 - Extensible
+- Support MJML
 
 
 ### Installation
-> $pip install --upgrade django-magic-notifier
+> pip install --upgrade django-magic-notifier
 
 ### Usage
 ##### 1. Configure settings
@@ -48,38 +49,31 @@ NOTIFIER = {
 ```
 
 ##### 2. Create templates
-Create a folder named **notifier** in one of app's templates dir. In this folder create another folder named **base** then created your base templates in this folder. Example  
+Create a folder named **notifier** in one of app's templates dir. In this folder create another folder named **my_template** 
+then create your base templates in this folder. Example:  
 
-*app_name/templates/notifier/base/email.html*
+*app_name/templates/notifier/my_template/email.html*
 ```
-    {% extends "base_notifier/email.html" %}
+{% extends "base_notifier/email.html" %}
+{% block content %}
+<tr>
+    <td><p>Hello {{ user.email }}
+    </td>
+</tr>
+{% endblock %}
 ```  
 
-*app_name/templates/notifier/base/email.txt*
+*app_name/templates/notifier/my_template/email.txt*
 ```
-    {% extends "base_notifier/email.txt" %}
+{% extends "base_notifier/email.txt" %}
+{% block content %}
+Hello {{ user.email }}
+{% endblock %}
 ```  
 
-*app_name/templates/notifier/hello/email.html*
-```
-    {% extends "notifier/base/email.html" %}
-    {% block content %}
-    <tr>
-        <td><p>Hello {{ user.email }}
-        </td>
-    </tr>
-    {% endblock %}
-```  
-
-*app_name/templates/notifier/hello/email.txt*
-```
-    {% extends "notifier/hello/email.txt" %}
-    {% block content %}
-    >Hello {{ user.email }}
-    {% endblock %}
-```  
-
-As you can see, the user to whom the notification goes is automatically added in the template's context. To avoid any clash to don't send the key `'user'` in the context of the  **notifiy()** function presented below.
+As you can see, the user to whom the notification goes is automatically added 
+in the template's context. To avoid any clash don't send the key `'user'` 
+in the context of the  **notifiy()** function presented below.
 
 Note that it is DMN (Django Magic Notifier) that has the base_notifier template.
 
