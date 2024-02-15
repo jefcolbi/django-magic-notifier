@@ -1,6 +1,8 @@
 import logging
+import os.path
 import traceback
 from argparse import OPTIONAL
+from pathlib import Path
 from threading import Thread
 from typing import Optional
 
@@ -10,6 +12,9 @@ from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
 from mjml import mjml2html
+from functools import partial
+from django.template.engine import Engine
+
 
 from magic_notifier.utils import get_settings
 
@@ -56,6 +61,15 @@ class Emailer:
         self.final_message = final_message
         self.threaded: bool = kwargs.get("threaded", False)
         self.files: Optional[list] = files
+        self.current_engine = Engine.get_default()
+        self.tpl_abs_path = self.current_engine.find_template(f"notifier/{self.template}/email.mjml")[1].name
+        print(f"{self.tpl_abs_path = }")
+
+    def mjml_loader(self, dest:str):
+        f_res = os.path.abspath(os.path.join(Path(self.tpl_abs_path).parent, dest))
+        with open(f_res) as fp:
+            res = fp.read()
+        return res
 
     def send(self):
         if self.threaded:
@@ -84,7 +98,7 @@ class Emailer:
                         )
                         logger.debug("mjml_content")
                         logger.debug(mjml_content)
-                        html_content = mjml2html(mjml_content)
+                        html_content = mjml2html(mjml_content, include_loader=self.mjml_loader)
                         logger.debug("html_content")
                         logger.debug(html_content)
                     except TemplateDoesNotExist as e:
