@@ -62,7 +62,10 @@ class Emailer:
         self.threaded: bool = kwargs.get("threaded", False)
         self.files: Optional[list] = files
         self.current_engine = Engine.get_default()
-        self.tpl_abs_path = self.current_engine.find_template(f"notifier/{self.template}/email.mjml")[1].name
+        if self.template:
+            self.tpl_abs_path = self.current_engine.find_template(f"notifier/{self.template}/email.mjml")[1].name
+        else:
+            self.tpl_abs_path = None
         print(f"{self.tpl_abs_path = }")
 
     def mjml_loader(self, dest:str):

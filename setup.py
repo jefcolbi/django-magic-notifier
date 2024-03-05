@@ -18,7 +18,7 @@ URL = 'https://github.com/jefcolbi/django-magic-notifier'
 EMAIL = 'jefcolbi@gmail.com'
 AUTHOR = 'jefcolbi'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.2.5'
+VERSION = '0.2.6'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
