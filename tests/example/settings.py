@@ -137,7 +137,25 @@ NOTIFIER = {
             "CLIENT": "magic_notifier.email_clients.django_email.DjangoEmailClient",
         }
     },
-    "USER_FROM_WS_TOKEN_FUNCTION": 'magic_notifier.utils.get_user_from_ws_token'
+    "USER_FROM_WS_TOKEN_FUNCTION": 'magic_notifier.utils.get_user_from_ws_token',
+    "WHATSAPP": {
+        "DEFAULT_GATEWAY": "waha",
+        "GATEWAYS": {
+            "waha": {
+                "BASE_URL": "http://localhost:3000"
+            }
+        }
+    },
+    "TELEGRAM": {
+        "DEFAULT_GATEWAY": "default",
+        "GATEWAYS": {
+            "default": {
+                "API_ID": "28514867",
+                "API_HASH": "0ebf4917ea2d32b672f30566481c6d80"
+            }
+        }
+    },
+    "GET_USER_NUMBER": "magic_notifier.utils.get_user_number"
 }
 
 ASGI_APPLICATION = 'example.asgi.application'

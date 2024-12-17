@@ -1,10 +1,12 @@
 import importlib
 import logging
 import traceback
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.utils import timezone
+from datetime import datetime, timedelta
 
 from magic_notifier.models import Notification, NotifyProfile
 
@@ -18,6 +20,7 @@ class NotificationBuilder:
         self.__text = None
         self.__subject = subject
         self.__user = None
+        self.__inited_by = None
         self.__type = None
         self.__sub_type = None
         self.__mode = None
@@ -25,6 +28,9 @@ class NotificationBuilder:
         self.__link = None
         self.__data = {}
         self.__image = None
+        self.__is_visible = True
+        self.__is_encrypted = False
+        self.__expires = None
 
     def text(self, text=None):
         if text is None:
@@ -74,11 +80,13 @@ class NotificationBuilder:
         self.__sub_type = sub_stype
         return self
 
-    def action(self, text=None, method: str = None, url: str = None, fields: dict = {}):
-        if method is None or url is None or text is None:
-            return self.__actions
+    def action(self, index: int = None, text=None, method: str = None,
+               url: str = None, params: dict = None, json_data: dict = None):
+        if index is not None:
+            return self.__actions[index]
 
-        action = {"method": method, "url": url, "fields": fields, "text": text}
+        action = {"method": method, "url": url, "text": text, "params": params,
+                  "json_data": json_data}
         self.__actions.append(action)
         return self
 
@@ -103,6 +111,17 @@ class NotificationBuilder:
 
         return self
 
+    def inited_by(self, inited_by: User = None):
+        if not inited_by:
+            return self.__inited_by
+
+        if isinstance(inited_by, User):
+            self.__inited_by = inited_by
+        else:
+            raise ValueError("Sender should be User or Reach instance")
+
+        return self
+
     def data(self, data: dict = None):
         if data is None:
             return self.__data
@@ -120,24 +139,58 @@ class NotificationBuilder:
         self.__image = image
         return self
 
+    def is_encrypted(self, is_encrypted: bool = None):
+        if is_encrypted is None:
+            return self.__is_encrypted
+
+        self.__is_encrypted = is_encrypted
+        return self
+
+    def is_visible(self, is_visible: bool = None):
+        if is_visible is None:
+            return self.__is_visible
+
+        self.__is_visible = is_visible
+        return self
+
+    def expires(self, expiry_dt: Union[datetime, timedelta] = None):
+        if expiry_dt is None:
+            return self.__expires
+
+        if not isinstance(expiry_dt, (datetime, timedelta)):
+            raise ValueError("expiry_dt should be a datetime or timedelta")
+
+        if isinstance(expiry_dt, datetime):
+            self.__expires = expiry_dt
+        else:
+            self.__expires = timezone.now() + expiry_dt
+
+        return self
+
     def save(self):
         return Notification.objects.create(
             subject=self.__subject,
             text=self.__text,
             link=self.__link,
             user=self.__user,
+            inited_by=self.__inited_by,
             data=self.__data,
             actions=self.__actions,
             image=self.__image,
             type=self.__type,
             sub_type=self.__sub_type,
+            is_encrypted=self.__is_encrypted,
+            is_visible=self.__is_visible,
+            expires=self.__expires
         )
 
     def show(self):
         return (
             f"(text={self.__text}, link={self.__link}, user={self.__user}, "
-            f"type={self.__type}, sub_stype={self.__sub_type}, mode={self.__mode},"
-            f"data={self.__data}, actions={self.__actions}, image={self.__image}"
+            f"type={self.__type}, sub_stype={self.__sub_type}, mode={self.__mode}, "
+            f"data={self.__data}, actions={self.__actions}, image={self.__image}, "
+            f"is_encrypted={self.__is_encrypted}, is_visible={self.__is_visible}, "
+            f"expires={self.__expires})"
         )
 
 
