@@ -12,9 +12,13 @@ class NexaSmsClient(BaseSmsClient):
 
     @classmethod
     def send(cls, number: str, text: str, **kwargs):
-        sub_account = settings.NOTIFIER["SMS"]["GATEWAYS"]["NEXA"]["EMAIL"]
-        sub_account_pass = settings.NOTIFIER["SMS"]["GATEWAYS"]["NEXA"]["PASSWORD"]
-        senderid = settings.NOTIFIER["SMS"]["GATEWAYS"]["NEXA"]["SENDERID"]
+        if not kwargs:
+            default_settings = settings.NOTIFIER["SMS"]["GATEWAYS"]["NEXA"]
+        else:
+            default_settings = kwargs
+        sub_account = default_settings["EMAIL"]
+        sub_account_pass = default_settings["PASSWORD"]
+        senderid = default_settings["SENDERID"]
         params = {
             "user": sub_account,
             "password": sub_account_pass,
