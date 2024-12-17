@@ -66,7 +66,7 @@ class Emailer:
             self.tpl_abs_path = self.current_engine.find_template(f"notifier/{self.template}/email.mjml")[1].name
         else:
             self.tpl_abs_path = None
-        print(f"{self.tpl_abs_path = }")
+        logger.info(f"{self.tpl_abs_path = }")
 
     def mjml_loader(self, dest:str):
         f_res = os.path.abspath(os.path.join(Path(self.tpl_abs_path).parent, dest))
@@ -149,6 +149,9 @@ class Emailer:
                             msg.attach(f"file {i+1}", pos_file.read())
                         else:
                             logger.warning(f"discarding possible file {pos_file}")
+
+                logger.debug(f"Sending email via connection")
                 msg.send()
+                logger.debug(f"Email sent!")
         except Exception as e:
             logger.error(traceback.format_exc())

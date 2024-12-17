@@ -9,6 +9,8 @@ from magic_notifier.emailer import Emailer
 from magic_notifier.pusher import Pusher
 from magic_notifier.settings import NOTIFIER_THREADED
 from magic_notifier.smser import ExternalSMS
+from magic_notifier.telegramer import Telegramer
+from magic_notifier.whatsapper import Whatsapper
 
 User = get_user_model()
 
@@ -24,6 +26,8 @@ def notify(
     final_message: str = None,
     email_gateway: str = 'default',
     sms_gateway: Optional[str] = None,
+    whatsapp_gateway: Optional[str] = None,
+    telegram_gateway: Optional[str] = None,
     files: list = None,
     threaded: bool = None,
 ):
@@ -93,7 +97,16 @@ def notify(
                     subject, receivers, template, context, threaded=threaded
                 )
                 pusher.send()
-
+            elif via == "whatsapp":
+                whatsapper = Whatsapper(receivers,context, threaded=threaded,
+                    template=template, final_message=final_message,
+                    whatsapp_gateway=whatsapp_gateway)
+                whatsapper.send()
+            elif via == "telegram":
+                telegramer = Telegramer(receivers, context, threaded=threaded,
+                        template=template, final_message=final_message,
+                        telegram_gateway=telegram_gateway)
+                telegramer.send()
             else:
                 logger.error(f"Unknown sending method {via}")
 

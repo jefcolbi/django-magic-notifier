@@ -155,6 +155,17 @@ NOTIFIER = {
             }
         }
     },
+    "SMS": {
+        "GATEWAYS": {
+            "NEXA": {
+                "CLIENT": "magic_notifier.sms_clients.nexa_client.NexaSmsClient",
+                "EMAIL": "jefcolbi@hotmail.com",
+                "PASSWORD": "nexah01$",
+                "SENDERID": "Yaknema"
+            },
+        },
+        "DEFAULT_GATEWAY": "NEXA"
+    },
     "GET_USER_NUMBER": "magic_notifier.utils.get_user_number"
 }
 
