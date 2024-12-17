@@ -18,7 +18,7 @@ URL = 'https://github.com/jefcolbi/django-magic-notifier'
 EMAIL = 'jefcolbi@gmail.com'
 AUTHOR = 'jefcolbi'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.2.6'
+VERSION = '0.2.8'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
@@ -31,7 +31,8 @@ REQUIRED = [
 # What packages are optional?
 EXTRAS = {
     'twilio': ['twilio'],
-    'push': ['channels', 'channels-redis']
+    'push': ['channels', 'channels-redis'],
+    'telegram': ['telethon']
 }
 
 # The rest you shouldn't have to touch too much :)

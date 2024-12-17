@@ -14,8 +14,12 @@ from django.test import TestCase, override_settings, LiveServerTestCase
 from magic_notifier.models import NotifyProfile, Notification
 from magic_notifier.notifier import notify
 from magic_notifier.pusher import Pusher
+from magic_notifier.telegramer import Telegramer
+from magic_notifier.telegram_clients.telethon import TelethonClient
 from magic_notifier.utils import NotificationBuilder
 from magic_notifier.serializers import NotificationSerializer
+from magic_notifier.whatsapp_clients.waha_client import WahaClient
+from magic_notifier.whatsapper import Whatsapper
 User = get_user_model()
 
 
@@ -477,3 +481,45 @@ class LivePushNotificationTestCase(LiveServerTestCase):
         seria = NotificationSerializer(instance=notif)
         print(notif)
         print(seria.data)
+
+
+class WhatsappNotificationTestCase(LiveServerTestCase):
+
+    def test_waha_client(self):
+        WahaClient.send("+237693138363", "Bonjour Jeff")
+
+    def test_whatsapper(self):
+        user = User.objects.create(email="testuser@localhost", username="testuser",
+                                   first_name="Jeff", last_name="Matt")
+        not_profile = NotifyProfile.objects.create(phone_number="+237693138363",
+                                                   user=user)
+        whatsapper = Whatsapper([user], {},
+                                final_message="Bonjour Jeff Matt. Votre code est XXXX")
+        whatsapper.send()
+
+
+class TelegramNotificationTestCase(LiveServerTestCase):
+
+    def test_telethon_client(self):
+        TelethonClient.send("+237693138363", "Jeff", "Matt",
+                            "Bonjour Jeff. Voici ton code XXXX.", "default")
+
+    def test_telegramer(self):
+        user = User.objects.create(email="testuser@localhost", username="testuser",
+                                   first_name="Jeff", last_name="Matt")
+        not_profile = NotifyProfile.objects.create(phone_number="+237693138363",
+                                                   user=user)
+        telegramer = Telegramer([user], {},
+                                final_message="Bonjour Jeff Matt")
+        telegramer.send()
+
+
+class AllNotificationTestCase(LiveServerTestCase):
+
+    def test_01_send_to_sms_whatsapp_telegram(self):
+        user = User.objects.create(email="testuser@localhost", username="testuser",
+                                   first_name="Jeff", last_name="Matt")
+        not_profile = NotifyProfile.objects.create(phone_number="+237698948836",
+                                                   user=user)
+        notify(['sms', 'whatsapp', 'telegram'], "Code",[user],
+               final_message="Salut Fedim Stephane. Ceci est un test d'envoi de code")
