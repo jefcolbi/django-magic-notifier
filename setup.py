@@ -20,6 +20,7 @@ AUTHOR = 'jefcolbi'
 REQUIRES_PYTHON = '>=3.6.0'
 VERSION = '0.2.8'
 
+
 # What packages are required for this module to be executed?
 REQUIRED = [
     'django>=2.2',
