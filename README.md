@@ -253,8 +253,6 @@ python manage.py test
 ## Roadmap
 
 - Extend support for additional messaging platforms.
-- Add detailed documentation and guides for developers.
-- Enable message analytics and reporting features.
 
 ---
 
@@ -272,5 +270,5 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ## Support
 
-For questions or support, visit our [documentation](https://django-magic-notifier.readthedocs.io/en/latest/) or file an issue on [GitHub](https://github.com/jefcolbi/django-magic-notifier/issues).
+File an issue on [GitHub](https://github.com/jefcolbi/django-magic-notifier/issues).
 
