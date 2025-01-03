@@ -1,34 +1,41 @@
 # Django Magic Notifier
 
-[![travis django-magic-notifier](https://api.travis-ci.com/jefcolbi/django-magic-notifier.svg?branch=main)](https://travis-ci.com/github/jefcolbi/django-magic-notifier) [![coverage django-magic-notifier](https://coveralls.io/repos/github/jefcolbi/django-magic-notifier/badge.svg?branch=main)](https://coveralls.io/github/jefcolbi/django-magic-notifier?branch=main) [![Pypi current version](https://img.shields.io/pypi/v/django-magic-notifier.svg)](https://pypi.org/project/django-magic-notifier/) [![Documentation](http://readthedocs.org/projects/django-magic-notifier/badge/?version=stable)](https://django-magic-notifier.readthedocs.io/en/stable/) ![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)
-![Python versions](https://img.shields.io/pypi/pyversions/django-magic-notifier) ![Django versions](https://img.shields.io/pypi/djversions/django-magic-notifier)  
-![](https://img.shields.io/github/stars/jefcolbi/django-magic-notifier.svg) ![](https://img.shields.io/github/forks/jefcolbi/django-magic-notifier.svg) ![](https://img.shields.io/github/tag/jefcolbi/django-magic-notifier.svg) ![](https://img.shields.io/github/issues/jefcolbi/django-magic-notifier.svg)
+[![Travis CI](https://api.travis-ci.com/jefcolbi/django-magic-notifier.svg?branch=main)](https://travis-ci.com/github/jefcolbi/django-magic-notifier) [![Coverage](https://coveralls.io/repos/github/jefcolbi/django-magic-notifier/badge.svg?branch=main)](https://coveralls.io/github/jefcolbi/django-magic-notifier?branch=main) [![PyPI Version](https://img.shields.io/pypi/v/django-magic-notifier.svg)](https://pypi.org/project/django-magic-notifier/) [![Documentation](http://readthedocs.org/projects/django-magic-notifier/badge/?version=stable)](https://django-magic-notifier.readthedocs.io/en/stable/) ![Python Versions](https://img.shields.io/pypi/pyversions/django-magic-notifier) ![Django Versions](https://img.shields.io/pypi/djversions/django-magic-notifier)
 
-### Why Django Magic Notifier  
-Sending notifications in Django has always been a complex subject. Django Magic Notifier solves this by providing only one function **notify()**. The library [will] support sending notifications via email, sms and push notifications.  
+---
 
-### Documentation
-[Full documentation](https://django-magic-notifier.readthedocs.io/en/latest/)
+### Why Choose Django Magic Notifier?
 
-### Features
+Managing notifications in Django applications can often be a complex and cumbersome task. **Django Magic Notifier (DMN)** simplifies this by consolidating all your notification needs into a single, powerful API: `notify()`. Whether you need to send emails, SMS, WhatsApp messages, Telegram notifications, or push notifications, DMN handles it all seamlessly.
 
-- Send emails
-- Send sms, TWILIO support
-- Send push notifications
-- Support templates
-- Simple API
-- Support files
-- Support multiple gateways
-- Extensible
-- Support MJML
+---
 
+## Features
 
-### Installation
-> pip install --upgrade django-magic-notifier
+- **Unified Notification API**: One function `notify()` to handle all notification types.
+- **Multi-Channel Support**: Email, SMS, WhatsApp, Telegram, and push notifications.
+- **Gateway Flexibility**: Configure multiple gateways per channel with ease.
+- **Template-Based Messages**: Use templates for consistent and professional notifications.
+- **File Attachments**: Include files in your notifications.
+- **Asynchronous Notifications**: Threaded support for background processing.
+- **Extensibility**: Add custom gateways or notification types.
+- **MJML Support**: Use modern, responsive email designs.
 
-### Usage
-##### 1. Configure settings
-If you have already configured SMTP EMAIL SETTINGS in django settings then can ignore this step. Else add a NOTIFIER dict in your settings like this
+---
+
+## Installation
+
+Install Django Magic Notifier using pip:
+
+```bash
+pip install --upgrade django-magic-notifier
+```
+
+---
+
+## Configuration
+
+Add the `NOTIFIER` configuration to your Django `settings.py` file. Below is an example of a complete configuration:
 
 ```python
 NOTIFIER = {
@@ -40,81 +47,230 @@ NOTIFIER = {
             "USE_SSL": False,
             "USER": "root@localhost",
             "FROM": "Root <root@localhost>",
-            "PASSWORD": "********",
+            "PASSWORD": "password",
             "CLIENT": "magic_notifier.email_clients.django_email.DjangoEmailClient",
         }
     },
-    "USER_FROM_WS_TOKEN_FUNCTION": 'magic_notifier.utils.get_user_from_ws_token'
+    "WHATSAPP": {
+        "DEFAULT_GATEWAY": "waha",
+        "GATEWAYS": {
+            "waha": {
+                "BASE_URL": "http://localhost:3000"
+            }
+        }
+    },
+    "TELEGRAM": {
+        "DEFAULT_GATEWAY": "default",
+        "GATEWAYS": {
+            "default": {
+                "API_ID": "xxxxxx",
+                "API_HASH": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            }
+        }
+    },
+    "SMS": {
+        "DEFAULT_GATEWAY": "TWILIO",
+        "GATEWAYS": {
+            "TWILIO": {
+                "CLIENT": "magic_notifier.sms_clients.twilio_client.TwilioClient",
+                "ACCOUNT": "account_sid",
+                "TOKEN": "auth_token",
+                "FROM_NUMBER": "+1234567890"
+            }
+        }
+    },
+    "USER_FROM_WS_TOKEN_FUNCTION": "magic_notifier.utils.get_user_from_ws_token",
+    "GET_USER_NUMBER": "magic_notifier.utils.get_user_number",
+    "THREADED": True
 }
 ```
 
-##### 2. Create templates
-Create a folder named **notifier** in one of app's templates dir. In this folder create another folder named **my_template** 
-then create your base templates in this folder. Example:  
+### Key Settings
 
-*app_name/templates/notifier/my_template/email.html*
-```
-{% extends "base_notifier/email.html" %}
-{% block content %}
-<tr>
-    <td><p>Hello {{ user.email }}
-    </td>
-</tr>
-{% endblock %}
-```  
+- **EMAIL**: Configure your email gateway, including host, port, and credentials.
+- **WHATSAPP**: Define the WhatsApp gateway with its base URL.
+- **TELEGRAM**: Configure Telegram with API credentials.
+- **SMS**: Specify SMS gateways such as Twilio, Nexa, or others.
+- **THREADED**: Enable background processing for notifications.
 
-*app_name/templates/notifier/my_template/email.txt*
-```
-{% extends "base_notifier/email.txt" %}
-{% block content %}
-Hello {{ user.email }}
-{% endblock %}
-```  
+---
 
-As you can see, the user to whom the notification goes is automatically added 
-in the template's context. To avoid any clash don't send the key `'user'` 
-in the context of the  **notifiy()** function presented below.
+## Usage
 
-Note that it is DMN (Django Magic Notifier) that has the base_notifier template.
+### Sending Notifications
 
-##### 3. Send notifications
-To send a notification via email do
+The `notify()` function is your gateway to all notification types.
+
+#### Basic Email Notification
 ```python
-    from magic_notifier.notifier import notify
+from magic_notifier.notifier import notify
 
-    # send an email from direct string
-    user = User(email="testuser@localhost", username="testuser")
-    subject = "Test magic notifier"
-    notify(["email"], subject, [user], final_message="Nice if you get this")
-
-    # send an email from a template
-    user = User(email="testuser@localhost", username="testuser")
-    subject = "Test magic notifier"
-    notify(["email"], subject, [user], template='hello')
-    
-    # send a sms from a template
-    user = User(email="testuser@localhost", username="testuser")
-    subject = "Test magic notifier"
-    notify(["sms"], subject, [user], template='hello')
-    
-    # send a notification via email and sms from a template
-    user = User(email="testuser@localhost", username="testuser")
-    subject = "Test magic notifier"
-    notify(["email", "sms"], subject, [user], template='hello')
+user = User.objects.get(email="testuser@localhost")
+subject = "Welcome!"
+notify(["email"], subject, [user], final_message="Welcome to our platform!")
 ```
 
-### Docs and support
-https://django-magic-notifier.readthedocs.io/en/latest/index.html
+#### SMS Notification with Template
+```python
+notify(["sms"], "Account Alert", [user], template="account_alert")
+```
 
+#### Multi-Channel Notification
+```python
+notify(["email", "sms"], "System Update", [user], final_message="The system will be down for maintenance.")
+```
 
-### Roadmap
+#### WhatsApp Notification
+```python
+notify(["whatsapp"], "Welcome", [user], final_message="Hello! This is a WhatsApp test message.")
+```
 
-- Generate full documentation
-- Translate documentation
+#### Telegram Notification
+```python
+notify(["telegram"], "Welcome", [user], final_message="Hello! This is a Telegram test message.")
+```
 
+### Passing Context to Templates
+You can pass additional context to your templates via the `context` argument, note that the `user` 
+object is automatically passed:
 
-### Contributing
-Contribution are welcome.
+```python
+context = {
+    "discount": 20
+}
+notify(["email"], "Special Offer", [user], template="special_offer", context=context)
+```
 
-### License
-As per the license, feel free to use the library as you want.
+In the template:
+```html
+{% block content %}
+<p>Hi {{ user.first_name }},</p>
+<p>We are excited to offer you a {{ discount }}% discount on your next purchase!</p>
+{% endblock %}
+```
+
+### Overriding Gateways
+You can override default gateways directly when sending notifications:
+
+#### Override Email Gateway
+```python
+notify(["email"], "Custom Email Gateway", [user], final_message="This uses a custom email gateway.", email_gateway="custom_gateway")
+```
+
+#### Override SMS Gateway
+```python
+notify(["sms"], "Custom SMS Gateway", [user], final_message="This uses a custom SMS gateway.", sms_gateway="custom_sms_gateway")
+```
+
+#### Override WhatsApp Gateway
+```python
+notify(["whatsapp"], "Custom WhatsApp Gateway", [user], final_message="This uses a custom WhatsApp gateway.", whatsapp_gateway="custom_whatsapp_gateway")
+```
+
+#### Override Telegram Gateway
+```python
+notify(["telegram"], "Custom Telegram Gateway", [user], final_message="This uses a custom Telegram gateway.", telegram_gateway="custom_telegram_gateway")
+```
+
+### Template Creation and Resolution
+When using templates, Django Magic Notifier looks for specific files depending on the notification channels. The template value designates a folder, not a file. Files are checked in the following order for each channel:
+
+- **Email**: `email.mjml` -> `email.html` -> `email.txt`
+- **SMS**: `sms.txt`
+- **WhatsApp**: `whatsapp.txt` -> `sms.txt`
+- **Telegram**: `telegram.txt` -> `sms.txt`
+
+If a file is not found, the next file in the sequence is checked. If no files are found, an error is raised.
+
+#### Example
+Suppose `notify()` is called as follows:
+```python
+notify(["telegram"], "Welcome", [user], template="welcome")
+```
+
+The following files will be checked in order:
+1. `notifier/welcome/telegram.txt`
+2. `notifier/welcome/sms.txt`
+
+Ensure that at least one of these files exists in your templates directory.
+
+---
+
+## Advanced Features
+
+### Sending Files
+Attach files to your notifications:
+```python
+files = ["/path/to/file.pdf"]
+notify(["email"], "Invoice", [user], final_message="Your invoice is attached.", files=files)
+```
+
+### Sending to Specific Receiver Groups
+The `notify()` function supports predefined values for the `receivers` argument to target specific user groups:
+
+#### Sending to Admin Users
+```python
+notify(["email"], "Admin Alert", "admins", final_message="This is a message for all admin users.")
+```
+
+#### Sending to Staff Users
+```python
+notify(["email"], "Staff Notification", "staff", final_message="This message is for all staff members.")
+```
+
+#### Sending to All Users
+```python
+notify(["email"], "Global Announcement", "all", final_message="This is a message for all users.")
+```
+
+#### Sending to Non-Staff Users
+```python
+notify(["email"], "Non-Staff Update", "all-staff", final_message="This message is for users who are not staff.")
+```
+
+#### Sending to Non-Admin Users
+```python
+notify(["email"], "User Alert", "all-admins", final_message="This is a message for all users except admins.")
+```
+
+### Asynchronous Processing
+Enable threaded notifications for better performance:
+```python
+notify(["sms"], "Alert", [user], final_message="This is a test.", threaded=True)
+```
+
+---
+
+## Testing
+
+DMN includes comprehensive test cases for all features. To run tests:
+```bash
+python manage.py test
+```
+
+---
+
+## Roadmap
+
+- Extend support for additional messaging platforms.
+- Add detailed documentation and guides for developers.
+- Enable message analytics and reporting features.
+
+---
+
+## Contributing
+
+We welcome contributions! To get started, fork the repository, make your changes, and submit a pull request. Refer to our [contributing guidelines](CONTRIBUTING.md) for more details.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+---
+
+## Support
+
+For questions or support, visit our [documentation](https://django-magic-notifier.readthedocs.io/en/latest/) or file an issue on [GitHub](https://github.com/jefcolbi/django-magic-notifier/issues).
+
