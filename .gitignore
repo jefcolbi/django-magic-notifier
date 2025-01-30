@@ -4,3 +4,4 @@
 .idea/
 .env/
 django_magic_notifier.egg-info/
+real_settings.py
