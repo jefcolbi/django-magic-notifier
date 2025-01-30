@@ -28,6 +28,8 @@ def notify(
     sms_gateway: Optional[str] = None,
     whatsapp_gateway: Optional[str] = None,
     telegram_gateway: Optional[str] = None,
+    push_gateway: Optional[str] = None,
+    remove_notification_fields: list=None,
     files: list = None,
     threaded: bool = None,
 ):
@@ -94,7 +96,8 @@ def notify(
                 assert template, "template variable can't be None or empty"
 
                 pusher = Pusher(
-                    subject, receivers, template, context, threaded=threaded
+                    subject, receivers, template, context, threaded=threaded, push_gateway=push_gateway,
+                    remove_notification_fields=remove_notification_fields
                 )
                 pusher.send()
             elif via == "whatsapp":

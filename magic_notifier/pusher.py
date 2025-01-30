@@ -1,3 +1,4 @@
+import importlib
 import logging
 import traceback
 from threading import Thread
@@ -13,14 +14,15 @@ import json
 
 from django.template import Context, Template
 
-from magic_notifier.utils import NotificationBuilder
+from magic_notifier.utils import NotificationBuilder, get_settings
 
 logger = logging.getLogger("notif")
 
 
 class Pusher:
     def __init__(
-        self, subject, receivers: list, template: str, context: dict, **kwargs
+        self, subject, receivers: list, template: str, context: dict,
+            push_gateway=None, remove_notification_fields: list=None, **kwargs
     ):
         """
 
@@ -33,10 +35,23 @@ class Pusher:
         self.receivers: list = receivers
         self.template: str = template
         self.context: dict = context
+        self.remove_notification_fields = remove_notification_fields
         if 'subject' not in context and subject:
             self.context['subject'] = subject
         self.threaded: bool = kwargs.get("threaded", False)
         self.image = kwargs.get("image")
+        # get the default sms gateway
+        self.push_gateway = get_settings('PUSH::DEFAULT_GATEWAY') if push_gateway is None else push_gateway
+        # get the sms gateway definition
+        NOTIFIER_PUSH_GATEWAY = get_settings('PUSH')["GATEWAYS"][self.push_gateway]
+        # get the sms client to be used
+        NOTIFIER_SMS_CLIENT = NOTIFIER_PUSH_GATEWAY['CLIENT']
+        # load the sms client
+        module_name, class_name = NOTIFIER_SMS_CLIENT.rsplit(".", 1)
+        module = importlib.import_module(module_name)
+        assert hasattr(module, class_name), "class {} is not in {}".format(class_name, module_name)
+        self.client_class = getattr(module, class_name)
+        self.push_class_options = NOTIFIER_PUSH_GATEWAY
 
     def send(self):
         if self.threaded:
@@ -72,14 +87,17 @@ class Pusher:
                     not_builder.image(self.image)
 
                 res = not_builder.save()
-                event['id'] = res.id
 
-                # return
-                channel_layer = get_channel_layer()
-                async_to_sync(channel_layer.group_send)(
-                    f"user-{user.id}",
-                    event
-                )
+                self.client_class(user, res, self.push_class_options,
+                                  remove_notification_fields=self.remove_notification_fields)
+                # event['id'] = res.id
+                #
+                # # return
+                # channel_layer = get_channel_layer()
+                # async_to_sync(channel_layer.group_send)(
+                #     f"user-{user.id}",
+                #     event
+                # )
 
                 return res
         except Exception as e:

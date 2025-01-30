@@ -106,6 +106,12 @@ class Notification(models.Model):
         self.read = timezone.now()
         self.save()
 
+    def to_dict(self):
+        return {'type': self.type, 'sub_type': self.sub_type,
+                'link': self.link, 'is_visible': self.is_visible,
+                'is_encrypted': self.is_encrypted, 'action': self.actions,
+                'data': self.data}
+
 
 class NotifyProfile(models.Model):
 

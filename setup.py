@@ -33,7 +33,8 @@ REQUIRED = [
 EXTRAS = {
     'twilio': ['twilio'],
     'push': ['channels', 'channels-redis'],
-    'telegram': ['telethon']
+    'telegram': ['telethon'],
+    'fcm': ['pyfcm']
 }
 
 # The rest you shouldn't have to touch too much :)
