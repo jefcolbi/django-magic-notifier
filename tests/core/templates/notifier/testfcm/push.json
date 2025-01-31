@@ -1,0 +1,14 @@
+{
+    "subject": "Consult receivev",
+    "text": "",
+    "type": "consult",
+    "sub_type": "asked",
+    "link": "",
+    "image": "{% block image %}{{ image }}{% endblock %}",
+    "icon": "{% block icon %}{{ icon }}{% endblock %}",
+    "mode": "{% block mode %}{{ mode }}{% endblock %}",
+    "actions": [],
+    "data": {
+      "consult_id": "10"
+    }
+}

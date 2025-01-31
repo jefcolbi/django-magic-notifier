@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 from magic_notifier.emailer import Emailer
+from magic_notifier.models import Notification
 from magic_notifier.pusher import Pusher
 from magic_notifier.settings import NOTIFIER_THREADED
 from magic_notifier.smser import ExternalSMS
@@ -24,10 +25,13 @@ def notify(
     template: str = None,
     context: dict = None,
     final_message: str = None,
+    final_notification: Optional[Notification] = None,
     email_gateway: str = 'default',
     sms_gateway: Optional[str] = None,
     whatsapp_gateway: Optional[str] = None,
     telegram_gateway: Optional[str] = None,
+    push_gateway: Optional[str] = None,
+    remove_notification_fields: list=None,
     files: list = None,
     threaded: bool = None,
 ):
@@ -94,7 +98,8 @@ def notify(
                 assert template, "template variable can't be None or empty"
 
                 pusher = Pusher(
-                    subject, receivers, template, context, threaded=threaded
+                    subject, receivers, template, context, threaded=threaded, push_gateway=push_gateway,
+                    remove_notification_fields=remove_notification_fields, final_notification=final_notification
                 )
                 pusher.send()
             elif via == "whatsapp":
