@@ -221,3 +221,6 @@ def get_settings(name:str) -> Any:
 def get_user_from_ws_token(token: str) -> User:
     from rest_framework.authtoken.models import Token
     return Token.objects.get(key=token).user
+
+def get_fcm_token_from_user(user: User) -> list:
+    return ['xxx']

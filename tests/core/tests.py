@@ -467,6 +467,11 @@ class PushNotificationTestCase(TestCase):
         print(notif)
         print(seria.data)
 
+    def test_send_push_via_fcm(self):
+        user = User.objects.create_user('testuser')
+        notify(['push'], "Super cool", [user], template="testfcm", remove_notification_fields=['action', 'link',
+                                                    'is_visible', 'is_encrypted'])
+
 
 class LivePushNotificationTestCase(LiveServerTestCase):
     port = 8001
