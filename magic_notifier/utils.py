@@ -223,4 +223,4 @@ def get_user_from_ws_token(token: str) -> User:
     return Token.objects.get(key=token).user
 
 def get_fcm_token_from_user(user: User) -> list:
-    return ['xxx']
+    return []
