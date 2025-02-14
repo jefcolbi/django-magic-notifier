@@ -1,3 +1,5 @@
+import asyncio
+
 from telethon import TelegramClient
 from telethon.tl.functions.contacts import ImportContactsRequest
 from telethon.tl.types import InputPhoneContact
@@ -24,6 +26,15 @@ class TelethonClient:
     @classmethod
     def send(cls, number:str, first_name:str, last_name:str, text:str,
              gateway:str, **kwargs):
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError as e:
+            if 'There is no current event loop' in str(e):
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            else:
+                raise
+
         client = cls.get_client(gateway, **kwargs)
         client.loop.run_until_complete(cls.async_send(client, number, first_name,
                         last_name, text))
