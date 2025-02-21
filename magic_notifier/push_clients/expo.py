@@ -22,7 +22,7 @@ class ExpoClient:
 
         for fcm_user_token in fcm_user_tokens:
             logger.info(f"Token: {fcm_user_token} :: Data: {data}")
-            self.send_push_notification(fcm_user_token, notification.subject, '', data)
+            self.send_push_notification(fcm_user_token, notification.subject, notification.text, data)
 
     def send_push_notification(self, token:str, title: str, body: str, data: dict):
         url = 'https://exp.host/--/api/v2/push/send'
