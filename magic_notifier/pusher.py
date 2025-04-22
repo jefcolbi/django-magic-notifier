@@ -25,7 +25,8 @@ class Pusher:
     def __init__(
         self, subject, receivers: list, template: str, context: dict,
             push_gateway=None, remove_notification_fields: list=None,
-            final_notification: Notification = None, **kwargs
+            final_notification: Notification = None,
+            inited_by: "User"=None, **kwargs
     ):
         """
 
@@ -33,6 +34,7 @@ class Pusher:
         :param receivers: The user list of receivers
         :param template: The template to use
         :param context:The context to pass to the template
+        :param inited_by: The user who inited the notification
         :param kwargs:
         """
         self.receivers: list = receivers
@@ -40,6 +42,7 @@ class Pusher:
         self.context: dict = context
         self.remove_notification_fields = remove_notification_fields
         self.final_notification: Notification = final_notification
+        self.inited_by = inited_by
         if 'subject' not in context and subject:
             self.context['subject'] = subject
         self.threaded: bool = kwargs.get("threaded", False)
@@ -90,6 +93,7 @@ class Pusher:
                         .data(event["data"])
                         .actions(event["actions"])
                         .user(user)
+                        .inited_by(self.inited_by)
                     )
 
                     if self.image:
