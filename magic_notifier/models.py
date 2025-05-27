@@ -87,6 +87,7 @@ class Notification(models.Model):
     mode: models.CharField = models.CharField(
         max_length=10, default=NOTIFIER_DEFAULT_MODE, choices=NOTIFIER_AVAILABLE_MODES
     )
+    masked: models.BooleanField = models.BooleanField(default=False)
 
     def __str__(self):
         if self.user and self.user.username:
