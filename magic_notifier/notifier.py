@@ -34,6 +34,7 @@ def notify(
     remove_notification_fields: list=None,
     files: list = None,
     threaded: bool = None,
+    inited_by: User = None,
 ):
     """This function send a notification via the method specified in parameter vias
 
@@ -99,7 +100,8 @@ def notify(
 
                 pusher = Pusher(
                     subject, receivers, template, context, threaded=threaded, push_gateway=push_gateway,
-                    remove_notification_fields=remove_notification_fields, final_notification=final_notification
+                    remove_notification_fields=remove_notification_fields, final_notification=final_notification,
+                    inited_by=inited_by
                 )
                 pusher.send()
             elif via == "whatsapp":

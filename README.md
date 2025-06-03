@@ -2,6 +2,8 @@
 
 [![Travis CI](https://api.travis-ci.com/jefcolbi/django-magic-notifier.svg?branch=main)](https://travis-ci.com/github/jefcolbi/django-magic-notifier) [![Coverage](https://coveralls.io/repos/github/jefcolbi/django-magic-notifier/badge.svg?branch=main)](https://coveralls.io/github/jefcolbi/django-magic-notifier?branch=main) [![PyPI Version](https://img.shields.io/pypi/v/django-magic-notifier.svg)](https://pypi.org/project/django-magic-notifier/) [![Documentation](http://readthedocs.org/projects/django-magic-notifier/badge/?version=stable)](https://django-magic-notifier.readthedocs.io/en/stable/) ![Python Versions](https://img.shields.io/pypi/pyversions/django-magic-notifier) ![Django Versions](https://img.shields.io/pypi/djversions/django-magic-notifier)
 
+[![Published on Django Packages](https://img.shields.io/badge/Published%20on-Django%20Packages-0c3c26)](https://djangopackages.org/packages/p/django-magic-notifier/)
+
 ---
 
 ### Why Choose Django Magic Notifier?

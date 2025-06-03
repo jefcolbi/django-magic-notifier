@@ -18,7 +18,7 @@ URL = 'https://github.com/jefcolbi/django-magic-notifier'
 EMAIL = 'jefcolbi@gmail.com'
 AUTHOR = 'jefcolbi'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.3.4'
+VERSION = '0.3.8'
 
 
 # What packages are required for this module to be executed?
@@ -128,13 +128,16 @@ setup(
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
         'Natural Language :: English',
         'Natural Language :: French',
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
         'Framework :: Django :: 2.2',
         'Framework :: Django :: 3.0',
         'Framework :: Django :: 3.1',
