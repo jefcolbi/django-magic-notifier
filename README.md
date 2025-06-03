@@ -49,7 +49,17 @@ NOTIFIER = {
             "FROM": "Root <root@localhost>",
             "PASSWORD": "password",
             "CLIENT": "magic_notifier.email_clients.django_email.DjangoEmailClient",
-        }
+        },
+        "ses": {
+            "CLIENT": "magic_notifier.email_clients.amazon_ses.AmazonSesClient",
+            "AWS_ACCESS_KEY": "****************",
+            "AWS_SECRET_KEY": "****************************************",
+            "AWS_REGION_NAME": "eu-north-1",
+            "AWS_REGION_ENDPOINT": "https://email.eu-north-1.amazonaws.com",
+            "FROM": "Service <account@service.se>",
+        },
+        "DEFAULT_GATEWAY": "ses",  # use amazon ses as the default gateway
+        "FALLBACKS": ["default"]  # if the default gateway fails, fallback to these gateways
     },
     "WHATSAPP": {
         "DEFAULT_GATEWAY": "waha",

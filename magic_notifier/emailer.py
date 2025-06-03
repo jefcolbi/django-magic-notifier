@@ -4,7 +4,7 @@ import traceback
 from argparse import OPTIONAL
 from pathlib import Path
 from threading import Thread
-from typing import Optional
+from typing import Optional, List
 
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
@@ -15,7 +15,6 @@ from mjml import mjml2html
 from functools import partial
 from django.template.engine import Engine
 
-
 from magic_notifier.utils import get_settings
 
 from .utils import import_attribute
@@ -25,15 +24,16 @@ logger = logging.getLogger("notifier")
 
 class Emailer:
     def __init__(
-        self,
-        subject: str,
-        receivers: list,
-        template: Optional[str],
-        context: dict,
-        email_gateway: str='default',
-        final_message: str = None,
-        files: list = None,
-        **kwargs,
+            self,
+            subject: str,
+            receivers: list,
+            template: Optional[str],
+            context: dict,
+            email_gateway: Optional[str] = None,
+            final_message: str = None,
+            files: list = None,
+            tried_gateways: Optional[List[str]] = None,
+            **kwargs,
     ):
         """The class is reponsible of email sending.
 
@@ -48,10 +48,16 @@ class Emailer:
         """
         try:
             NOTIFIER_EMAIL = get_settings('EMAIL')
+            NOTIFIER_EMAIL_DEFAULT_GATEWAY = NOTIFIER_EMAIL.get('DEFAULT_GATEWAY', 'default')
         except (AttributeError, KeyError):
-            from magic_notifier.settings import NOTIFIER_EMAIL
-        self.email_settings:dict = NOTIFIER_EMAIL[email_gateway]
+            from magic_notifier.settings import NOTIFIER_EMAIL, NOTIFIER_EMAIL_DEFAULT_GATEWAY
+
+        self.fallback_gateways = NOTIFIER_EMAIL.get('FALLBACKS', [])
+        self.current_gateway = email_gateway if email_gateway else NOTIFIER_EMAIL_DEFAULT_GATEWAY
+        self.email_settings: dict = NOTIFIER_EMAIL[self.current_gateway]
         self.email_client = import_attribute(self.email_settings["CLIENT"])
+
+        self.tried_gateways = tried_gateways if tried_gateways else []
 
         self.connection = self.email_client.get_connection(self.email_settings)
         self.subject: str = subject
@@ -68,7 +74,7 @@ class Emailer:
             self.tpl_abs_path = None
         logger.info(f"{self.tpl_abs_path = }")
 
-    def mjml_loader(self, dest:str):
+    def mjml_loader(self, dest: str):
         f_res = os.path.abspath(os.path.join(Path(self.tpl_abs_path).parent, dest))
         with open(f_res) as fp:
             res = fp.read()
@@ -118,7 +124,7 @@ class Emailer:
                             html_content = None
 
                     text_content = render_to_string(
-                    f"notifier/{self.template}/email.txt", ctx
+                        f"notifier/{self.template}/email.txt", ctx
                     )  # render with dynamic value
                     logger.debug("text_content")
                     logger.debug(text_content)
@@ -144,9 +150,10 @@ class Emailer:
                             if hasattr(f, 'read'):
                                 msg.attach(name, f.read())
                             else:
-                                logger.warning(f"file {name} can't be added to mail because it is not a file-like object")
+                                logger.warning(
+                                    f"file {name} can't be added to mail because it is not a file-like object")
                         elif hasattr(pos_file, 'read'):
-                            msg.attach(f"file {i+1}", pos_file.read())
+                            msg.attach(f"file {i + 1}", pos_file.read())
                         else:
                             logger.warning(f"discarding possible file {pos_file}")
 
@@ -155,3 +162,12 @@ class Emailer:
                 logger.debug(f"Email sent!")
         except Exception as e:
             logger.error(traceback.format_exc())
+            self.tried_gateways.append(self.current_gateway)
+            if self.fallback_gateways:
+                for gateway in self.fallback_gateways:
+                    if gateway not in self.tried_gateways:
+                        logger.warning(f"We are falling back to {gateway} gateway")
+                        new_emailer = Emailer(self.subject, self.receivers, self.template, self.context,
+                                              email_gateway=gateway, final_message=self.final_message,
+                                              files=self.files, tried_gateways=self.tried_gateways)
+                        return new_emailer.send()

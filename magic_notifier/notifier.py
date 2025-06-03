@@ -26,7 +26,7 @@ def notify(
     context: dict = None,
     final_message: str = None,
     final_notification: Optional[Notification] = None,
-    email_gateway: str = 'default',
+    email_gateway: Optional[str] = None,
     sms_gateway: Optional[str] = None,
     whatsapp_gateway: Optional[str] = None,
     telegram_gateway: Optional[str] = None,

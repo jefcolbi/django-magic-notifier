@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from pathlib import Path
 from unittest import mock
@@ -229,6 +230,17 @@ class EmailTestCase(TestCase):
         subject = "Test magic notifier"
         notify(["unknown"], subject, "all-staff", final_message="Nice if you get this")
         self.assertEqual(len(mail.outbox), 0) # type: ignore
+
+    def test_amazon_ses(self):
+        user = User(email=os.environ['TEST_EMAIL'], username="testuser")
+
+        subject = "Test magic notifier"
+        notify(["email"], subject, [user], final_message="Nice if you get this")
+
+        self.assertGreater(len(mail.outbox), 0)  # type: ignore
+        first_message = mail.outbox[0]  # type: ignore
+        self.assertEqual(first_message.to, [user.email])
+        self.assertEqual(first_message.subject, subject)
 
 
 sms_outbox = []
