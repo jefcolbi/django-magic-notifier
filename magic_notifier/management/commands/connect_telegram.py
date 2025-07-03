@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from magic_notifier.telegram_clients.telethon import TelethonClient
+from django.conf import settings
 
 User = get_user_model()
 
@@ -16,7 +17,7 @@ class Command(BaseCommand):
 
         try:
             gateway = options['gateway']
-            TelethonClient.get_client(gateway)
+            TelethonClient.get_client(gateway, **settings.NOTIFIER['TELEGRAM']['GATEWAYS'][gateway])
             print('Done!')
         except Exception:
             import traceback
