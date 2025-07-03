@@ -5,4 +5,4 @@ from magic_notifier.models import Notification
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('id', 'subject', 'type', 'sub_type')
